@@ -154,20 +154,19 @@ class MonteCarloTreeSearch:
 
     def find_best_move(self, iterations=100):
         # NOTE: Add tqdm
-
-        for i in range(iterations):
+        for _ in range(iterations):
             # Select most promising node
-            max_ucb_node = self.select()
+            max_ucb_node = self._select()
 
             # Expand the node
-            self.expand(max_ucb_node)
+            self._expand(max_ucb_node)
 
             # Simulate a random playout
             for child_node in max_ucb_node.children:
-                self.simulate(child_node)
+                self._simulate(child_node)
 
             # Backpropagate the result up the tree
-            self.backpropagate(max_ucb_node)
+            self._backpropagate(max_ucb_node)
 
             # Stopping condition
             if max_ucb_node.board.is_finished:
@@ -179,10 +178,10 @@ class MonteCarloTreeSearch:
         node_with_max_visits = self._get_child_node_with_max_visits()
         return (*node_with_max_visits.action, node_with_max_visits)
 
-    def select(self):
+    def _select(self):
         return self._get_leaf_node_with_max_ucb()
 
-    def expand(self, node):
+    def _expand(self, node):
         max_ucb_node_board = node.board
         for available_action in max_ucb_node_board.available_actions:
             (row, col) = available_action
@@ -190,10 +189,10 @@ class MonteCarloTreeSearch:
             new_board = Board(state=parent_board_state)
             new_board.play_move(row, col, self.cur_player)
             new_child_node = Node(board=new_board, parent=node)
-            new_child_node.action = (row, col)
+            new_child_node.action = available_action
             node.add_child(new_child_node)
 
-    def simulate(self, node):
+    def _simulate(self, node):
         """Perform a random rollout by drawing moves uniformly at random"""
         cur_player = self.cur_player
         cur_board = copy.deepcopy(node.board)
@@ -221,7 +220,7 @@ class MonteCarloTreeSearch:
         # Increase number of rollouts for this node
         node.n += 1
 
-    def backpropagate(self, node):
+    def _backpropagate(self, node):
         n_to_add = 0
         w_to_add = 0
         for child_node in node.children:
@@ -260,19 +259,25 @@ class TicTacToe:
             board.play_move(row, col, 1)
             board.print_board()
 
+            # Might have to add a Node as the new root for the AI to start from
+            # self.mcts.tree.root = Node(board=board)
+
             (row, col, best_move_node) = self.mcts.find_best_move(iterations=100)
             board.play_move(row, col, -1)
 
             if board.is_finished:
+                # BROKEN!
+                print("Finished!")
                 break
 
-            self.mcts.tree.root = best_move_node
-            self.mcts.tree.root.board = board  #  fix!
+            # self.mcts.tree.root = best_move_node
+            # self.mcts.tree.root.board = board  #  fix!
+
+            # When the AI plays in the same position as you, it overwrites when it shouldn't
 
             print("TTTAI's move:")
             board.print_board()
 
 
 if __name__ == "__main__":
-    tic_tac_toe = TicTacToe()
-    tic_tac_toe.play()
+    TicTacToe().play()
