@@ -8,7 +8,9 @@ from typing import Any, Optional
 
 
 class Node:
-    def __init__(self, left: "Node" = None, right: "Node" = None, value: Any = None):
+    def __init__(
+        self, left: "Node" = None, right: "Node" = None, value: Any = None
+    ):
         """Initialises a single Node, with or without a value, with left and right Nodes
 
         Args:
@@ -20,7 +22,9 @@ class Node:
         self.right = right
         self.value = value
 
-    def fill_intermediate_nodes(self, depth: int = 0, maximizer: bool = True) -> Any:
+    def fill_intermediate_nodes(
+        self, depth: int = 0, maximizer: bool = True
+    ) -> Any:
         """Recursively completes intermediate Node values in the tree with minimum/maximum values
         from the subtrees according to whether or not the minimizing/maximizing player is choosing
         values respectively
@@ -35,9 +39,13 @@ class Node:
                 child Node containing the same value, so we know which Node to choose from the start.
         """
         while self.left.value == None:
-            self.left.fill_intermediate_nodes(depth=depth + 1, maximizer=not maximizer)
+            self.left.fill_intermediate_nodes(
+                depth=depth + 1, maximizer=not maximizer
+            )
         while self.right.value == None:
-            self.right.fill_intermediate_nodes(depth=depth + 1, maximizer=not maximizer)
+            self.right.fill_intermediate_nodes(
+                depth=depth + 1, maximizer=not maximizer
+            )
 
         left_value = self.left.value
         right_value = self.right.value

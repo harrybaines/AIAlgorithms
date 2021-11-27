@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+
+[dev-packages]
+black = "*"
+mypy = "*"
+pylint = "*"
+isort = "*"
+
+[requires]
+python_version = "3.9"
+
+[scripts]
+imports = "isort . --check-only"
+formatting = "black --line-length 79 --check ."
+types = "mypy ."
+lint = "pylint . --fail-under=9"

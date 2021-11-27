@@ -31,13 +31,19 @@ def minimax(
 
     if max_turn:
         return max(
-            minimax(cur_depth + 1, node_index * 2, False, scores, target_depth),
-            minimax(cur_depth + 1, node_index * 2 + 1, False, scores, target_depth),
+            minimax(
+                cur_depth + 1, node_index * 2, False, scores, target_depth
+            ),
+            minimax(
+                cur_depth + 1, node_index * 2 + 1, False, scores, target_depth
+            ),
         )
     else:
         return min(
             minimax(cur_depth + 1, node_index * 2, True, scores, target_depth),
-            minimax(cur_depth + 1, node_index * 2 + 1, True, scores, target_depth),
+            minimax(
+                cur_depth + 1, node_index * 2 + 1, True, scores, target_depth
+            ),
         )
 
 
