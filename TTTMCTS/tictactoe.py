@@ -2,7 +2,8 @@ import random
 import math
 import copy
 
-random.seed(42)
+SEED = 42
+random.seed(SEED)
 
 
 class Board:
@@ -47,8 +48,6 @@ class Board:
         If the board is full with no winner, 0 is returned as the game finished as a draw.
         If the board still has empty spaces wth no winner, None is returned as the game is still in progress.
         """
-        # for i, row in enumerate(self.state):
-
         for i, row in enumerate(self.state):
             # Check if there is a complete row (return the player value)
             col_count = 0
@@ -129,17 +128,6 @@ class MonteCarloTreeSearch:
         self.tree = Tree(board=board)
         self.cur_player = -1
 
-    def _get_leaf_node_with_max_ucb(self):
-        # By default returns the first child with the highest UCB if there are equal UCB's
-        node = self.tree.root
-        while node is not None and len(node.children):
-            for child_node in node.children:
-                child_node.ucb = self._calculate_ucb(child_node, node)
-            node = max(
-                node.children, key=lambda child_node: child_node.ucb, default=None
-            )
-        return node
-
     def _get_child_node_with_max_visits(self):
         node = self.tree.root
         return max(node.children, key=lambda child_node: child_node.n, default=None)
@@ -153,7 +141,6 @@ class MonteCarloTreeSearch:
         )
 
     def find_best_move(self, iterations=100):
-        # NOTE: Add tqdm
         for _ in range(iterations):
             # Select most promising node
             max_ucb_node = self._select()
@@ -161,11 +148,11 @@ class MonteCarloTreeSearch:
             # Expand the node
             self._expand(max_ucb_node)
 
-            # Simulate a random playout
+            # Simulate random playouts for each new child
             for child_node in max_ucb_node.children:
                 self._simulate(child_node)
 
-            # Backpropagate the result up the tree
+            # Backpropagate the results from the children up the tree
             self._backpropagate(max_ucb_node)
 
             # Stopping condition
@@ -176,10 +163,18 @@ class MonteCarloTreeSearch:
             self.cur_player = -self.cur_player
 
         node_with_max_visits = self._get_child_node_with_max_visits()
-        return (*node_with_max_visits.action, node_with_max_visits)
+        return node_with_max_visits.action
 
     def _select(self):
-        return self._get_leaf_node_with_max_ucb()
+        # By default returns the first child with the highest UCB if there are equal UCB's
+        node = self.tree.root
+        while node is not None and len(node.children):
+            for child_node in node.children:
+                child_node.ucb = self._calculate_ucb(child_node, node)
+            node = max(
+                node.children, key=lambda child_node: child_node.ucb, default=None
+            )
+        return node
 
     def _expand(self, node):
         max_ucb_node_board = node.board
@@ -195,27 +190,33 @@ class MonteCarloTreeSearch:
     def _simulate(self, node):
         """Perform a random rollout by drawing moves uniformly at random"""
         cur_player = self.cur_player
+        node_player = cur_player
         cur_board = copy.deepcopy(node.board)
         game_state = cur_board.game_state
 
         while True:
             cur_player = -cur_player
             available_actions = cur_board.available_actions
-            random_action = random.choice(available_actions)
-            (row, col) = random_action
-            cur_board.play_move(row, col, cur_player)
+            if len(available_actions):
+                random_action = random.choice(available_actions)
+                (row, col) = random_action
+                cur_board.play_move(row, col, cur_player)
 
             # Check game state (see Board.game_state property)
-            # game_state = cur_board.game_state
+            game_state = cur_board.game_state
             if cur_board.is_finished:
                 break
 
-        # Check for player win
-        if game_state == 1:
+        # Check for player win relative to the rolled out node
+        if game_state == 1 and node_player == 1:
             node.w += 1
-        # Check for AI win
-        elif game_state == -1:
+        elif game_state == 1 and node_player == -1:
             node.w -= 1
+        # Check for AI win relative to the rolled out node
+        elif game_state == -1 and node_player == 1:
+            node.w -= 1
+        elif game_state == -1 and node_player == -1:
+            node.w += 1
 
         # Increase number of rollouts for this node
         node.n += 1
@@ -226,9 +227,6 @@ class MonteCarloTreeSearch:
         for child_node in node.children:
             n_to_add += child_node.n
             w_to_add += child_node.w
-
-        node.n += n_to_add
-        node.w += w_to_add
 
         parent_node = node.parent
         if parent_node is None:
@@ -251,7 +249,11 @@ class TicTacToe:
                 player_position = int(input("Enter a position (1-9) to play > "))
                 row = (player_position - 1) // 3
                 col = (player_position - 1) % 3
-                if board.state[row][col] == 0:
+                if (
+                    player_position >= 1
+                    and player_position <= 9
+                    and board.state[row][col] == 0
+                ):
                     break
                 print("Not a legal move. Please try again.")
 
@@ -259,24 +261,17 @@ class TicTacToe:
             board.play_move(row, col, 1)
             board.print_board()
 
-            # Might have to add a Node as the new root for the AI to start from
-            # self.mcts.tree.root = Node(board=board)
-
-            (row, col, best_move_node) = self.mcts.find_best_move(iterations=100)
+            (row, col) = self.mcts.find_best_move(iterations=100)
             board.play_move(row, col, -1)
-
-            if board.is_finished:
-                # BROKEN!
-                print("Finished!")
-                break
-
-            # self.mcts.tree.root = best_move_node
-            # self.mcts.tree.root.board = board  #  fix!
-
-            # When the AI plays in the same position as you, it overwrites when it shouldn't
-
             print("TTTAI's move:")
             board.print_board()
+
+            # Update root for next round of play
+            self.mcts.tree.root = Node(board=board)
+
+            if board.is_finished:
+                print("Finished!")
+                break
 
 
 if __name__ == "__main__":
