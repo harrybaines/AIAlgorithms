@@ -10,7 +10,7 @@
 import random
 from typing import Tuple
 
-from mcts.mcts import Board, MonteCarloTreeSearch, Node
+from mcts import Board, MonteCarloTreeSearch, Node
 
 # Initialize a random seed for deterministic games
 SEED = 42
@@ -31,35 +31,53 @@ class TicTacToe:
     def play(self) -> None:
         """Begins the Tic-Tac-Toe game by alternating between human and AI
         moves"""
-        self.board.print_board()
-        self.mcts = MonteCarloTreeSearch(board=self.board)
+        # Initialize MCTS
+        self.mcts = MonteCarloTreeSearch()
+        if not self.board.is_empty:
+            self.board.print_board()
+
+        # Game loop
         while True:
+            # Player's turn
             (player_row, player_col) = self.get_user_position()
             print("Players move:")
             self.board.play_move(player_row, player_col, 1)
             self.board.print_board()
+            if self.board.is_complete:
+                if self.board.game_state == 0:
+                    print("Tie!")
+                else:
+                    print("Yay, player has won!")
+                break
 
-            (row, col) = self.mcts.find_best_move(iterations=100)
+            # Re-initialize root of MCTS
+            self.mcts.root_node = Node(board=self.board)
+
+            # AI's turn
+            (row, col) = self.mcts.find_best_move(
+                board=self.board, iterations=10_000
+            )
             self.board.play_move(row, col, -1)
             print("TTTAI's move:")
             self.board.print_board()
-
-            # Update root for next round of play
-            self.mcts.root_node = Node(board=self.board)
-
-            if self.board.is_finished:
-                print("Finished!")
+            # NOTE: put into method
+            if self.board.is_complete:
+                if self.board.game_state == 0:
+                    print("Tie!")
+                else:
+                    print("Oh no, the AI has won!")
                 break
 
     def get_user_position(self) -> Tuple[int, int]:
         """Gets the user's input position from the command line.
 
         The input is a number from 1-9 representing the following positions:
-
             [
-                [1, 2, 3],
-                [4, 5, 6],
-                [7, 8, 9]
+                1 | 2 | 3
+                ----------
+                4 | 5 | 6
+                ----------
+                7 | 8 | 9
             ]
 
         This value is transformed to a row, column pair to index the board

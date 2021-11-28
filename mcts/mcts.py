@@ -2,74 +2,70 @@ import copy
 import random
 from typing import List, Optional, Tuple
 
-from mcts import utils
+import utils
 
 
 class MonteCarloTreeSearch:
     """Monte Carlo Tree Search class"""
 
-    def __init__(self, board: "Board") -> None:
-        """Initializes the MonteCarloTreeSearch class by constructing the
-        search tree with a new root node, initialized to the board state
-        provided.
+    def find_best_move(
+        self, board: "Board", iterations: int = 100
+    ) -> Tuple[int, int]:
+        """Given a number of MCTS iterations to run, find the best possible
+        move from the tree's current root node and return as the action to
+        take.
 
-        The board state can be initialized to any starting point, and is
-        iteratively updated during the game so the MCTS algorithm can find the
-        best action from the current board state.
+        A new root node is constructed and initialized with the board state
+        provided. The board state can be initialized to any starting point, and
+        is iteratively updated during the game so the MCTS algorithm can find
+        the best action from the current board state.
 
         The current player is initialized to -1 (AI) as it is assumed the
         player (1) has already played, and it is now the AI's turn to play.
 
         Args:
             board (Board): The board to provide to the root node of the search
-                tree
-        """
-        self.root_node = Node(board=board)
-        self.cur_player = -1
-
-    def _get_child_node_with_max_visits(self) -> "Node":
-        """Returns the child node with the largest number of visits (n_i) from
-        the current tree's root node
-
-        Returns:
-            Node: The child node with the largest number of visits (n_i).
-        """
-        return max(
-            self.root_node.children,
-            key=lambda child_node: child_node.n,
-            default=None,
-        )
-
-    def find_best_move(self, iterations: int = 100) -> Tuple[int, int]:
-        """Given a number of MCTS iterations to run, find the best possible
-        move from the tree's current root node and return as the action to take
-
-        Args:
+                tree.
             iterations (int, optional): The number of MCTS iterations. Defaults
                 to 100.
 
         Returns:
             Tuple[int, int]: The (row, column) action to.
         """
+        self.root_node = Node(board=board)
+        self.cur_player = -1
+
+        # Start by expanding the root node
+        self._expand(self.root_node)
+
         for _ in range(iterations):
-            # Selection phase: select the most promising node
-            max_uct_node = self._select()
+            # Selection phase: select the most promising leaf node down the
+            # tree
+            selected_node = self._select()
 
-            # Expansion phase: expand the most promising node
-            self._expand(max_uct_node)
-
-            # Simulation phase: simulate random playouts for each new child
-            # from the most promising node
-            for child_node in max_uct_node.children:
-                self._simulate(child_node)
-
-            # Backpropagation phase: backpropagate the results from the
-            # children up the tree
-            self._backpropagate(max_uct_node)
-
-            # Stopping condition
-            if max_uct_node.board.is_finished:
-                break
+            # Simulation phase: perform rollouts for leaf nodes which haven't
+            # been visited yet
+            # Expansion phase: expand the most promising node which has already
+            # been visited
+            # Backpropagation phase: backpropagate the results from the rollout
+            # up the tree
+            if not selected_node.visited:
+                self._rollout(selected_node)
+                self._backpropagate(selected_node)
+            else:
+                # If the selected node has already been visited, expand the
+                # node with all possible actions from the current state, and
+                # perform a rollout from the first new child node
+                self._expand(selected_node)
+                if selected_node.children:
+                    child_node = selected_node.children[0]
+                    self._rollout(child_node)
+                    self._backpropagate(child_node)
+                else:
+                    # If the selected node is a terminal state, we simply return
+                    # the value of that state and backpropagate it up the tree
+                    self._rollout(selected_node)
+                    self._backpropagate(selected_node)
 
             # Alternate between AI and opponent
             self.cur_player = -self.cur_player
@@ -86,6 +82,8 @@ class MonteCarloTreeSearch:
         largest UCT score.
         If multiple child nodes of a given node have the same UCT score, the
         first node is returned.
+        If a node has no children (i.e. it hasn't been expanded yet) then
+        return this node ready for expansion.
 
         Returns:
             Node: The node having the largest UCT score.
@@ -118,10 +116,10 @@ class MonteCarloTreeSearch:
             new_board = Board(state=parent_board_state)
             new_board.play_move(row, col, self.cur_player)
             new_child_node = Node(board=new_board, parent=node)
-            new_child_node.action = available_action  #  type: ignore
+            new_child_node.action = available_action
             node.add_child(new_child_node)
 
-    def _simulate(self, node: "Node") -> None:
+    def _rollout(self, node: "Node") -> None:
         """Performs the simulation phase of the MCTS algorithm.
 
         This method performs a simulation ('rollout') of the given node's board
@@ -137,44 +135,38 @@ class MonteCarloTreeSearch:
             node (Node): The node to perform a rollout for.
         """
         cur_player = self.cur_player
-        node_player = cur_player
         cur_board = copy.deepcopy(node.board)
         game_state = cur_board.game_state
 
         while True:
-            # Alternate between players, taking random actions until a terminal
-            # state is reached
             cur_player = -cur_player
-            available_actions = cur_board.get_available_actions()
-            if len(available_actions):
-                random_action = random.choice(available_actions)
-                (row, col) = random_action
-                cur_board.play_move(row, col, cur_player)
 
             # Check if the game is in a terminal state (see the
-            # Board.is_finished property)
-            game_state = cur_board.game_state
-            if cur_board.is_finished:
+            # Board.is_complete property)
+            if cur_board.is_complete:
                 break
 
-        # Check for player win relative to the rolled out node (started with
-        # player's move)
-        if game_state == 1 and node_player == 1:
+            # Alternate between players, taking random actions until a terminal
+            # state is reached
+            available_actions = cur_board.get_available_actions()
+            (row, col) = random.choice(available_actions)
+            cur_board.play_move(row, col, cur_player)
+            game_state = cur_board.game_state
+
+        # Check for player win where the most recent move was taken by the player
+        if game_state == 1 and cur_player == 1:
             node.w += 1
-        # Check for player win relative to the rolled out node (started with
-        # AI's move)
-        elif game_state == 1 and node_player == -1:
+        # Check for player loss where the most recent move was taken by the AI
+        elif game_state == 1 and cur_player == -1:
             node.w -= 1
-        # Check for AI win relative to the rolled out node (started with AI's
-        # move)
-        elif game_state == -1 and node_player == -1:
+        # Check for AI win where the most recent move was taken by the AI
+        elif game_state == -1 and cur_player == -1:
             node.w += 1
-        # Check for AI win relative to the rolled out node (started with
-        # player's move)
-        elif game_state == -1 and node_player == 1:
+        # Check for AI loss where the most recent move was taken by the player
+        elif game_state == -1 and cur_player == 1:
             node.w -= 1
 
-        # Increase number of rollouts for this node
+        # Increase number of visits this node
         node.n += 1
 
     def _backpropagate(self, node: "Node") -> None:  # type: ignore[no-self-use]
@@ -184,26 +176,38 @@ class MonteCarloTreeSearch:
         from the given node until the root of the tree is reached.
 
         Args:
-            node (Node): The node containing the values to backpropagate up the
-                tree.
+            node (Node): The node containing the child nodes to backpropagate
+                their values up the tree.
         """
-        # Get the values of n_i and w_i to add up the tree
-        n_to_add, w_to_add = 0, 0
-        for child_node in node.children:
-            n_to_add += child_node.n
-            w_to_add += child_node.w
-
-        parent_node = node.parent
-        if parent_node is None:
-            node.n += n_to_add
-            node.w += w_to_add
-
         # For each parent node of this node, update the values of n_i and w_i
         # up to the root
+        sign = -1
+        parent_node = node.parent
         while parent_node is not None:
-            parent_node.n += n_to_add
-            parent_node.w += w_to_add
+            parent_node.n += 1
+            # Each parent up the tree has a negated value because this indicates
+            # whether the player at this current node won or lost as a result
+            # of their actions
+            # (i.e. if the result was a win for the current node, then the parent
+            # node records a loss, and vice versa)
+            parent_node.w += node.w * sign
             parent_node = parent_node.parent
+            sign = -sign
+
+        # NOTE: may need to consider current player!
+
+    def _get_child_node_with_max_visits(self) -> "Node":
+        """Returns the child node with the largest number of visits (n_i) from
+        the current tree's root node
+
+        Returns:
+            Node: The child node with the largest number of visits (n_i).
+        """
+        return max(
+            self.root_node.children,
+            key=lambda child_node: child_node.n,
+            default=None,
+        )
 
 
 class Board:
@@ -245,7 +249,10 @@ class Board:
 
     def get_available_actions(self) -> List[Tuple[int, int]]:
         """Returns the available actions to take from the board (i.e. the
-        board's empty spaces)
+        board's empty spaces).
+
+        The method scans available actions by going across the columns then
+        down the rows in a clockwise fashion.
 
         Returns:
             List[Tuple[row, col]]: A list of tuples, where each tuple consists
@@ -259,7 +266,16 @@ class Board:
         ]
 
     @property
-    def is_finished(self) -> bool:
+    def is_empty(self) -> bool:
+        """Returns True if the current board is empty
+
+        Returns:
+            bool: True if the current board is empty, False otherwise.
+        """
+        return all(col == 0 for row in self.state for col in row)
+
+    @property
+    def is_complete(self) -> bool:
         """Returns True if the state of this board has a winner or has ended in
             a tie
 
@@ -282,36 +298,56 @@ class Board:
             Optional[int]: An optional integer:
                  0: game finished as a tie;
                  1: player has won;
-                -1: AI has won
+                -1: AI has won;
               None: game is still in progress
         """
-        for i, row in enumerate(self.state):
-            # Check if there is a complete row (return the player value)
-            col_count = 0
-            for col in row:
-                if col != 0 and row[0] == col:
-                    col_count += 1
-            if col_count == len(row):
+        # Check if there is a complete row (return the player value)
+        for row in self.state:
+            if abs(sum(row)) == len(row):
                 return row[0]
 
-            # Check if there is a complete column (return the player value)
-            row_count = 0
-            for j in range(len(row)):
-                col = self.state[j][i]
-                if col != 0 and row[0] == col:
-                    row_count += 1
-            if row_count == len(row):
-                return row[0]
+        # Check if there is a complete column (return the player value)
+        n_cols = len(self.state[0])
+        for col_idx in range(n_cols):
+            column = [
+                self.state[row_idx][col_idx] for row_idx in range(n_cols)
+            ]
+            if abs(sum(column)) == n_cols:
+                return column[0]
 
+        # NOTE: refactor
         # Check if there is a complete diagonal (return the player value)
-        if (
-            self.state[0][0] == self.state[1][1]
-            and self.state[1][1] == self.state[2][2]
-        ) or (
-            self.state[0][2] == self.state[1][1]
-            and self.state[1][1] == self.state[2][0]
-        ):
-            return self.state[1][1]
+        equal_diags = 0
+        for row_idx, row in enumerate(self.state):
+            cell_value = row[row_idx]
+            if cell_value == 0:
+                break
+            if row_idx == 0:
+                equal_diags += 1
+                continue
+            prev_cell_value = self.state[row_idx - 1][row_idx - 1]
+            if cell_value != prev_cell_value:
+                break
+            equal_diags += 1
+
+        if equal_diags == len(row):
+            return cell_value
+
+        equal_diags = 0
+        for row_idx, row in enumerate(self.state):
+            cell_value = row[len(row) - 1 - row_idx]
+            if cell_value == 0:
+                break
+            if row_idx == 0:
+                equal_diags += 1
+                continue
+            prev_cell_value = self.state[row_idx - 1][len(row) - row_idx]
+            if cell_value != prev_cell_value:
+                break
+            equal_diags += 1
+
+        if equal_diags == len(row):
+            return cell_value
 
         # Check for a draw (i.e. all board spaces have been filled and we have
         # no winner)
@@ -368,6 +404,15 @@ class Node:
         self.uct = None
         self.w = 0
         self.n = 0
+
+    @property
+    def visited(self) -> bool:
+        """Returns True if this node has already been visited
+
+        Returns:
+            bool: True if this node has already been visited, False otherwise.
+        """
+        return self.n > 0
 
     def add_child(self, node: "Node") -> None:
         """Adds the provided node as a child to this node
