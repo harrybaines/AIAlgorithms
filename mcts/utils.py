@@ -2,7 +2,7 @@ import math
 
 
 def calculate_uct(
-    child_node: "Node", parent_node: "Node", c: int = 1
+    child_node: "Node", parent_node: "Node", c: int = 2
 ) -> float:
     """Calculates the UCT (upper confidence tree) score for the given
     child_node using the following equation:

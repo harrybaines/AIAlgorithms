@@ -44,29 +44,28 @@ class TicTacToe:
             self.board.play_move(player_row, player_col, 1)
             self.board.print_board()
             if self.board.is_complete:
-                if self.board.game_state == 0:
-                    print("Tie!")
-                else:
-                    print("Yay, player has won!")
+                self.print_game_state()
                 break
-
-            # Re-initialize root of MCTS
-            self.mcts.root_node = Node(board=self.board)
 
             # AI's turn
             (row, col) = self.mcts.find_best_move(
                 board=self.board, iterations=10_000
             )
-            self.board.play_move(row, col, -1)
             print("TTTAI's move:")
+            self.board.play_move(row, col, -1)
             self.board.print_board()
-            # NOTE: put into method
             if self.board.is_complete:
-                if self.board.game_state == 0:
-                    print("Tie!")
-                else:
-                    print("Oh no, the AI has won!")
+                self.print_game_state()
                 break
+
+    def print_game_state(self) -> None:
+        if self.board.game_state == 0:
+            print("Tie!")
+        elif self.board.game_state == -1:
+            print("Oh no, the AI has won!")
+        elif self.board.game_state == 1:
+            print("Yay, player has won!")
+        return
 
     def get_user_position(self) -> Tuple[int, int]:
         """Gets the user's input position from the command line.

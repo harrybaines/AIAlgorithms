@@ -32,48 +32,41 @@ class MonteCarloTreeSearch:
         Returns:
             Tuple[int, int]: The (row, column) action to.
         """
-        self.root_node = Node(board=board)
-        self.cur_player = -1
+        self.root_node = Node(board=board, player=1)
 
         # Start by expanding the root node
         self._expand(self.root_node)
 
         for _ in range(iterations):
-            # Selection phase: select the most promising leaf node down the
-            # tree
+            # Selection phase: select the most promising leaf node
             selected_node = self._select()
 
-            # Simulation phase: perform rollouts for leaf nodes which haven't
-            # been visited yet
             # Expansion phase: expand the most promising node which has already
             # been visited
-            # Backpropagation phase: backpropagate the results from the rollout
-            # up the tree
-            if not selected_node.visited:
-                self._rollout(selected_node)
-                self._backpropagate(selected_node)
-            else:
+            if selected_node.visited:
                 # If the selected node has already been visited, expand the
                 # node with all possible actions from the current state, and
                 # perform a rollout from the first new child node
+                # If the selected node is a terminal state, we simply return
+                # the value of that state and backpropagate it up the tree
+                # NOTE: can be a random selection
                 self._expand(selected_node)
-                if selected_node.children:
-                    child_node = selected_node.children[0]
-                    self._rollout(child_node)
-                    self._backpropagate(child_node)
-                else:
-                    # If the selected node is a terminal state, we simply return
-                    # the value of that state and backpropagate it up the tree
-                    self._rollout(selected_node)
-                    self._backpropagate(selected_node)
+                selected_node = (
+                    selected_node.children[0]
+                    if selected_node.children
+                    else selected_node
+                )
 
-            # Alternate between AI and opponent
-            self.cur_player = -self.cur_player
+            # Simulation phase: perform rollouts for leaf nodes which haven't
+            # been visited yet
+            # Backpropagation phase: backpropagate the results from the rollout
+            # up the tree
+            self._rollout(selected_node)
+            self._backpropagate(selected_node)
 
-        # The child node of the root node with the most visits has the best
-        # action to take
-        node_with_max_visits = self._get_child_node_with_max_visits()
-        return node_with_max_visits.action
+        # Get the best action
+        node_to_choose = self._get_child_node_with_max_score()
+        return node_to_choose.action
 
     def _select(self) -> "Node":
         """Performs the selection phase of the MCTS algorithm.
@@ -92,11 +85,7 @@ class MonteCarloTreeSearch:
         while node is not None and node.children:
             for child_node in node.children:
                 child_node.uct = utils.calculate_uct(child_node, node)
-            node = max(
-                node.children,
-                key=lambda child_node: child_node.uct,
-                default=None,
-            )
+            node = max(node.children, key=lambda child_node: child_node.uct)
         return node
 
     def _expand(self, node: "Node") -> None:
@@ -109,13 +98,15 @@ class MonteCarloTreeSearch:
         Args:
             node (Node): The node to expand.
         """
-        node_board = node.board
-        for available_action in node_board.get_available_actions():
+        next_player = -node.player
+        for available_action in node.board.get_available_actions():
             (row, col) = available_action
-            parent_board_state = copy.deepcopy(node_board.state)
+            parent_board_state = copy.deepcopy(node.board.state)
             new_board = Board(state=parent_board_state)
-            new_board.play_move(row, col, self.cur_player)
-            new_child_node = Node(board=new_board, parent=node)
+            new_board.play_move(row, col, next_player)
+            new_child_node = Node(
+                board=new_board, parent=node, player=next_player
+            )
             new_child_node.action = available_action
             node.add_child(new_child_node)
 
@@ -134,9 +125,8 @@ class MonteCarloTreeSearch:
         Args:
             node (Node): The node to perform a rollout for.
         """
-        cur_player = self.cur_player
         cur_board = copy.deepcopy(node.board)
-        game_state = cur_board.game_state
+        cur_player = node.player
 
         while True:
             cur_player = -cur_player
@@ -151,20 +141,20 @@ class MonteCarloTreeSearch:
             available_actions = cur_board.get_available_actions()
             (row, col) = random.choice(available_actions)
             cur_board.play_move(row, col, cur_player)
-            game_state = cur_board.game_state
 
         # Check for player win where the most recent move was taken by the player
+        game_state = cur_board.game_state
         if game_state == 1 and cur_player == 1:
-            node.w += 1
+            node.w = 1
         # Check for player loss where the most recent move was taken by the AI
         elif game_state == 1 and cur_player == -1:
-            node.w -= 1
+            node.w = -1
         # Check for AI win where the most recent move was taken by the AI
         elif game_state == -1 and cur_player == -1:
-            node.w += 1
+            node.w = 1
         # Check for AI loss where the most recent move was taken by the player
         elif game_state == -1 and cur_player == 1:
-            node.w -= 1
+            node.w = -1
 
         # Increase number of visits this node
         node.n += 1
@@ -181,20 +171,20 @@ class MonteCarloTreeSearch:
         """
         # For each parent node of this node, update the values of n_i and w_i
         # up to the root
-        sign = -1
         parent_node = node.parent
         while parent_node is not None:
             parent_node.n += 1
-            # Each parent up the tree has a negated value because this indicates
-            # whether the player at this current node won or lost as a result
-            # of their actions
+            # Each parent up the tree has an incremented/decremented value
+            # because this indicates whether the player at this current node
+            # won or lost as a result of their actions
             # (i.e. if the result was a win for the current node, then the parent
             # node records a loss, and vice versa)
-            parent_node.w += node.w * sign
+            parent_node.w = (
+                parent_node.w + 1
+                if node.player == parent_node.player
+                else parent_node.w - 1
+            )
             parent_node = parent_node.parent
-            sign = -sign
-
-        # NOTE: may need to consider current player!
 
     def _get_child_node_with_max_visits(self) -> "Node":
         """Returns the child node with the largest number of visits (n_i) from
@@ -204,9 +194,18 @@ class MonteCarloTreeSearch:
             Node: The child node with the largest number of visits (n_i).
         """
         return max(
-            self.root_node.children,
-            key=lambda child_node: child_node.n,
-            default=None,
+            self.root_node.children, key=lambda child_node: child_node.n
+        )
+
+    def _get_child_node_with_max_score(self) -> "Node":
+        """Returns the child node with the largest score (w_i) from the current
+        tree's root node
+
+        Returns:
+            Node: The child node with the largest score (w_i).
+        """
+        return max(
+            self.root_node.children, key=lambda child_node: child_node.w
         )
 
 
@@ -389,7 +388,9 @@ class Node:
     """Node class to represent the state of a Tic-Tac-Toe board for use in a
     tree"""
 
-    def __init__(self, board: Board, parent: "Node" = None) -> None:
+    def __init__(
+        self, board: Board, player: int, parent: "Node" = None
+    ) -> None:
         """Initializes a new node with the state of a Tic-Tac-Toe board
 
         Args:
@@ -399,6 +400,7 @@ class Node:
         """
         self.board = board
         self.parent = parent
+        self.player = player
         self.children: List["Node"] = []
         self.action = None
         self.uct = None
