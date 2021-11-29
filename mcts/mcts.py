@@ -40,6 +40,10 @@ class MonteCarloTreeSearch:
         for _ in range(iterations):
             # Selection phase: select the most promising leaf node
             selected_node = self._select()
+            # if selected_node.is_terminal:
+            #     self._rollout(selected_node)
+            #     self._backpropagate(selected_node)
+            #     continue
 
             # Expansion phase: expand the most promising node which has already
             # been visited
@@ -49,13 +53,16 @@ class MonteCarloTreeSearch:
                 # perform a rollout from the first new child node
                 # If the selected node is a terminal state, we simply return
                 # the value of that state and backpropagate it up the tree
-                # NOTE: can be a random selection
+                # NOTE: could be a random selection
                 self._expand(selected_node)
                 selected_node = (
                     selected_node.children[0]
                     if selected_node.children
                     else selected_node
                 )
+
+            # NOTE: look into terminal state handling more
+            # NOTE: check w's and n's backproped up are correct
 
             # Simulation phase: perform rollouts for leaf nodes which haven't
             # been visited yet
@@ -65,7 +72,7 @@ class MonteCarloTreeSearch:
             self._backpropagate(selected_node)
 
         # Get the best action
-        node_to_choose = self._get_child_node_with_max_score()
+        node_to_choose = self._get_child_node_with_max_visits()
         return node_to_choose.action
 
     def _select(self) -> "Node":
@@ -82,7 +89,7 @@ class MonteCarloTreeSearch:
             Node: The node having the largest UCT score.
         """
         node = self.root_node
-        while node is not None and node.children:
+        while node.children:
             for child_node in node.children:
                 child_node.uct = utils.calculate_uct(child_node, node)
             node = max(node.children, key=lambda child_node: child_node.uct)
@@ -144,17 +151,17 @@ class MonteCarloTreeSearch:
 
         # Check for player win where the most recent move was taken by the player
         game_state = cur_board.game_state
-        if game_state == 1 and cur_player == 1:
-            node.w = 1
-        # Check for player loss where the most recent move was taken by the AI
-        elif game_state == 1 and cur_player == -1:
-            node.w = -1
+        if game_state == 1 and node.player == 1:
+            node.w += 1
+        # Check for player win where the most recent move was taken by the AI
+        elif game_state == 1 and node.player == -1:
+            node.w -= 1
         # Check for AI win where the most recent move was taken by the AI
-        elif game_state == -1 and cur_player == -1:
-            node.w = 1
-        # Check for AI loss where the most recent move was taken by the player
-        elif game_state == -1 and cur_player == 1:
-            node.w = -1
+        elif game_state == -1 and node.player == -1:
+            node.w += 1
+        # Check for AI win where the most recent move was taken by the player
+        elif game_state == -1 and node.player == 1:
+            node.w -= 1
 
         # Increase number of visits this node
         node.n += 1
@@ -172,6 +179,7 @@ class MonteCarloTreeSearch:
         # For each parent node of this node, update the values of n_i and w_i
         # up to the root
         parent_node = node.parent
+        result = node.w
         while parent_node is not None:
             parent_node.n += 1
             # Each parent up the tree has an incremented/decremented value
@@ -179,11 +187,8 @@ class MonteCarloTreeSearch:
             # won or lost as a result of their actions
             # (i.e. if the result was a win for the current node, then the parent
             # node records a loss, and vice versa)
-            parent_node.w = (
-                parent_node.w + 1
-                if node.player == parent_node.player
-                else parent_node.w - 1
-            )
+            parent_node.w = parent_node.w + (result * -parent_node.player)
+            # NOTE: maybe the sign needs to vary depending on the current player? terminal state detection?
             parent_node = parent_node.parent
 
     def _get_child_node_with_max_visits(self) -> "Node":
@@ -415,6 +420,10 @@ class Node:
             bool: True if this node has already been visited, False otherwise.
         """
         return self.n > 0
+
+    @property
+    def is_terminal(self) -> bool:
+        return self.board.is_complete
 
     def add_child(self, node: "Node") -> None:
         """Adds the provided node as a child to this node
