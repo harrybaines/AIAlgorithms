@@ -344,29 +344,6 @@ class Board:
 
         # Check if there is a complete diagonal (return the player value)
         # Detect downward diagonal from the top left
-        # diag = True
-        # start_row = self.state[0]
-        # for row_idx in range(1, len(start_row)):
-        #     prev_cell = self.state[row_idx - 1][row_idx - 1]
-        #     cur_cell = self.state[row_idx][row_idx]
-        #     if cur_cell == 0 or prev_cell != cur_cell:
-        #         diag = False
-        #         break
-        # if diag:
-        #     return start_row[0]
-
-        # diag = True
-        # start_row = self.state[0]
-        # for idx in range(len(start_row), 1, -1):
-        #     prev_cell = self.state[len(start_row) - idx][idx - 1]
-        #     cur_cell = self.state[(len(start_row) - idx) + 1][idx - 2]
-        #     if cur_cell == 0 or prev_cell != cur_cell:
-        #         diag = False
-        #         break
-        # if diag:
-        #     return start_row[-1]
-
-        # Detect downward diagonal from the top left
         first_row_len = len(self.state[0])
         downward_diagonal = [
             self.state[idx][idx] for idx in range(first_row_len)
