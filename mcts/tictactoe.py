@@ -26,13 +26,14 @@ class TicTacToe:
         By default, an empty board state is used, however a partial board can
         be used to play the game from a non-starting position.
         """
-        self.board = Board([[0, 0, 1], [1, 0, -1], [-1, 1, 0]])
+        self.board = Board([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
         # [[0, 0, 0], [0, 0, 0], [0, 0, 0]]: empty board state
         # [[0, 0, 0], [0, -1, 0], [1, 0, -1]]: tutorial diagram example
         # [[0, 0, 1], [1, 1, -1], [-1, -1, 0]]: h plays 2, machine should play 9
         # [[0, 0, 0], [-1, 1, 1], [0, 0, -1]]: h plays 3, machine should play 7 (not working!)
         # [[0, 0, 1], [1, 0, -1], [-1, 1, 0]]: h plays 2, machine should play 5 (not working!)
         # [[-1, -1, 1], [1, 1, -1], [0, 1, 0]]: endgame example, h plays 3, machine should play 7
+        # [[-1, 1, -1], [1, 1, -1], [0, 0, 0]]: endgame example, h plays 9, machine should play 8
         # NOTE: the AI seems to play out the endgame perfectly every time
 
     def play(self) -> None:

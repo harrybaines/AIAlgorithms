@@ -47,7 +47,7 @@ class MonteCarloTreeSearch:
 
             # Expansion phase: expand the most promising node which has already
             # been visited
-            if selected_node.visited:
+            if selected_node.visited and not selected_node.is_terminal:
                 # If the selected node has already been visited, expand the
                 # node with all possible actions from the current state, and
                 # perform a rollout from the first new child node
@@ -68,8 +68,8 @@ class MonteCarloTreeSearch:
             # been visited yet
             # Backpropagation phase: backpropagate the results from the rollout
             # up the tree
-            self._rollout(selected_node)
-            self._backpropagate(selected_node)
+            result = self._rollout(selected_node)
+            self._backpropagate(selected_node, result)
 
         # Get the best action
         node_to_choose = self._get_child_node_with_max_visits()
@@ -132,6 +132,16 @@ class MonteCarloTreeSearch:
         Args:
             node (Node): The node to perform a rollout for.
         """
+        # For terminal states, return the value of the terminal state
+        game_state = node.board.game_state
+        if node.is_terminal:
+            if game_state == 0:
+                return 0
+            elif node.player == game_state:
+                return 1
+            else:
+                return -1
+
         cur_board = copy.deepcopy(node.board)
         cur_player = node.player
 
@@ -150,23 +160,20 @@ class MonteCarloTreeSearch:
             cur_board.play_move(row, col, cur_player)
 
         # Check for player win where the most recent move was taken by the player
-        game_state = cur_board.game_state
-        if game_state == 1 and node.player == 1:
-            node.w += 1
-        # Check for player win where the most recent move was taken by the AI
-        elif game_state == 1 and node.player == -1:
-            node.w -= 1
         # Check for AI win where the most recent move was taken by the AI
-        elif game_state == -1 and node.player == -1:
-            node.w += 1
-        # Check for AI win where the most recent move was taken by the player
-        elif game_state == -1 and node.player == 1:
-            node.w -= 1
+        game_state = cur_board.game_state
+        if game_state == 0:
+            return 0
+        elif (game_state == 1 and node.player == 1) or (
+            game_state == -1 and node.player == -1
+        ):
+            return 1
+        # Game state is different to the current node player, therefore
+        # The player won where the most recent move was taken by the AI, or
+        # the won win where the most recent move was taken by the player
+        return -1
 
-        # Increase number of visits this node
-        node.n += 1
-
-    def _backpropagate(self, node: "Node") -> None:  # type: ignore[no-self-use]
+    def _backpropagate(self, node: "Node", result: int) -> None:  # type: ignore[no-self-use]
         """Performs the backpropagation phase of the MCTS algorithm.
 
         This method iteratively updates the values of n_i and w_i up the tree
@@ -176,10 +183,13 @@ class MonteCarloTreeSearch:
             node (Node): The node containing the child nodes to backpropagate
                 their values up the tree.
         """
+        # Update w_i and n_i for this node based on the result of the game
+        node.n += 1
+        node.w += result
+
         # For each parent node of this node, update the values of n_i and w_i
         # up to the root
         parent_node = node.parent
-        result = node.w
         while parent_node is not None:
             parent_node.n += 1
             # Each parent up the tree has an incremented/decremented value
@@ -187,8 +197,13 @@ class MonteCarloTreeSearch:
             # won or lost as a result of their actions
             # (i.e. if the result was a win for the current node, then the parent
             # node records a loss, and vice versa)
-            parent_node.w = parent_node.w + (result * -parent_node.player)
+            if parent_node.player != node.player:
+                parent_node.w -= 1
+            else:
+                parent_node.w += 1
+            # parent_node.w = parent_node.w + (result * -parent_node.player)
             # NOTE: maybe the sign needs to vary depending on the current player? terminal state detection?
+            # NOTE: Should be decreasing parent by -1 when the parents child is a win for the human from the terminal state
             parent_node = parent_node.parent
 
     def _get_child_node_with_max_visits(self) -> "Node":
