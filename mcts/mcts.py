@@ -275,6 +275,19 @@ class Board:
         ]
 
     @property
+    def size(self) -> int:
+        """Returns the size of the board
+
+        The board should be symmetrical in size (i.e. the number of rows should
+        always equal the number of columns so correct diagonals can be
+        detected)
+
+        Returns:
+            int: The size of the board as an integer (i.e. rows/columns).
+        """
+        return len(self.state[0])
+
+    @property
     def is_empty(self) -> bool:
         """Returns True if the current board is empty
 
@@ -365,23 +378,24 @@ class Board:
 
         Currently, only a 3x3 board is supported.
         """
+        board_size = self.size
         print("\n")
         for i, row in enumerate(self.state):
             col_values = []
-            for col in row:
+            for j, col in enumerate(row):
+                cell_no = (i * board_size) + (j + 1)
+                pad = " "
                 if col == 1:
-                    col_values.append("O")
+                    col_values.append(f"\033[92m{pad}o\033[0;0m")
                 elif col == -1:
-                    col_values.append("X")
+                    col_values.append(f"\033[91m{pad}x\033[0;0m")
                 elif col == 0:
-                    col_values.append(" ")
-            print("\t     |     |     ")
-            row_str = f"\t  {'  |  '.join(col_values)}  "
+                    pad = "" if cell_no >= 10 else " "
+                    col_values.append(f"\033[90m{pad}{cell_no}\033[0;0m")
+            row_str = f"\t  {' | '.join(col_values)} "
             print(row_str)
-            if i != 2:
-                print("\t_____|_____|_____")
-            else:
-                print("\t     |     |     ")
+            if i != board_size - 1:
+                print("\t", "-" * 25)
         print("\n")
 
 

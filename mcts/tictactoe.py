@@ -36,7 +36,15 @@ class TicTacToe:
         By default, an empty board state is used, however a partial board can
         be used to play the game from a non-starting position.
         """
-        self.board = Board([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
+        self.board = Board(
+            [
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+            ]
+        )
 
     def play(self) -> None:
         """Begins Tic-Tac-Toe by alternating between human and AI moves"""
@@ -58,7 +66,7 @@ class TicTacToe:
 
             # AI's turn
             (row, col) = self.mcts.find_best_move(
-                board=self.board, iterations=1_000
+                board=self.board, iterations=10_000
             )
             print("TTTAI's move:")
             self.board.play_move(row, col, -1)
@@ -95,11 +103,18 @@ class TicTacToe:
         Returns:
             Tuple[int, int]: The row, column pair to play on the board state.
         """
+        board_size = self.board.size
+        total_positions = board_size * board_size
         while True:
-            player_position = int(input("Enter a position (1-9) to play > "))
-            row = (player_position - 1) // 3
-            col = (player_position - 1) % 3
-            if 1 <= player_position <= 9 and self.board.state[row][col] == 0:
+            player_position = int(
+                input(f"Enter a position (1-{total_positions}) to play: ")
+            )
+            row = (player_position - 1) // board_size
+            col = (player_position - 1) % board_size
+            if (
+                1 <= player_position <= total_positions
+                and self.board.state[row][col] == 0
+            ):
                 return (row, col)
             print("Not a legal move. Please try again.")
 
