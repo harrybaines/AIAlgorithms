@@ -40,10 +40,6 @@ class MonteCarloTreeSearch:
         for _ in range(iterations):
             # Selection phase: select the most promising leaf node
             selected_node = self._select()
-            # if selected_node.is_terminal:
-            #     self._rollout(selected_node)
-            #     self._backpropagate(selected_node)
-            #     continue
 
             # Expansion phase: expand the most promising node which has already
             # been visited
@@ -60,9 +56,6 @@ class MonteCarloTreeSearch:
                     if selected_node.children
                     else selected_node
                 )
-
-            # NOTE: look into terminal state handling more
-            # NOTE: check w's and n's backproped up are correct
 
             # Simulation phase: perform rollouts for leaf nodes which haven't
             # been visited yet
@@ -197,13 +190,11 @@ class MonteCarloTreeSearch:
             # won or lost as a result of their actions
             # (i.e. if the result was a win for the current node, then the parent
             # node records a loss, and vice versa)
-            if parent_node.player != node.player:
-                parent_node.w -= 1
-            else:
-                parent_node.w += 1
-            # parent_node.w = parent_node.w + (result * -parent_node.player)
-            # NOTE: maybe the sign needs to vary depending on the current player? terminal state detection?
-            # NOTE: Should be decreasing parent by -1 when the parents child is a win for the human from the terminal state
+            parent_node.w = (
+                parent_node.w + 1
+                if parent_node.player == node.player
+                else parent_node.w - 1
+            )
             parent_node = parent_node.parent
 
     def _get_child_node_with_max_visits(self) -> "Node":

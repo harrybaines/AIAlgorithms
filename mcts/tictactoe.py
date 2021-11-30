@@ -6,6 +6,16 @@
 # References:
 #   [1]: http://tim.hibal.org/blog/alpha-zero-how-and-why-it-works/ (algorithm
 #        description)
+#   [2]: https://www.youtube.com/watch?v=UXW2yZndl7U (YouTube demo of MCTS by
+#        John Levine)
+#   [3]: https://vgarciasc.github.io/mcts-viz/ (Tic Tac Toe browser demo)
+#   [4]: https://www.youtube.com/watch?v=ghhznqBoESY (YouTube video for [3])
+#   [5]: https://nestedsoftware.com/2019/08/07/tic-tac-toe-with-mcts-2h5k.152104.html
+#        (general MCTS description)
+#   [6]: https://medium.com/swlh/tic-tac-toe-at-the-monte-carlo-a5e0394c7bc2
+#        (MCTS overview)
+#   [7]: https://en.wikipedia.org/wiki/Monte_Carlo_tree_search#/media/File:MCTS-steps.svg
+#        (MCTS Wikipedia)
 
 import random
 from typing import Tuple
@@ -34,7 +44,6 @@ class TicTacToe:
         # [[0, 0, 1], [1, 0, -1], [-1, 1, 0]]: h plays 2, machine should play 5 (not working!)
         # [[-1, -1, 1], [1, 1, -1], [0, 1, 0]]: endgame example, h plays 3, machine should play 7
         # [[-1, 1, -1], [1, 1, -1], [0, 0, 0]]: endgame example, h plays 9, machine should play 8
-        # NOTE: the AI seems to play out the endgame perfectly every time
 
     def play(self) -> None:
         """Begins the Tic-Tac-Toe game by alternating between human and AI
