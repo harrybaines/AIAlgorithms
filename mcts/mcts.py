@@ -324,40 +324,7 @@ class Board:
             if abs(sum(column)) == n_cols:
                 return column[0]
 
-        # NOTE: refactor
         # Check if there is a complete diagonal (return the player value)
-        # equal_diags = 0
-        # for row_idx, row in enumerate(self.state):
-        #     cell_value = row[row_idx]
-        #     if cell_value == 0:
-        #         break
-        #     if row_idx == 0:
-        #         equal_diags += 1
-        #         continue
-        #     prev_cell_value = self.state[row_idx - 1][row_idx - 1]
-        #     if cell_value != prev_cell_value:
-        #         break
-        #     equal_diags += 1
-
-        # if equal_diags == len(row):
-        #     return cell_value
-
-        # equal_diags = 0
-        # for row_idx, row in enumerate(self.state):
-        #     cell_value = row[len(row) - 1 - row_idx]
-        #     if cell_value == 0:
-        #         break
-        #     if row_idx == 0:
-        #         equal_diags += 1
-        #         continue
-        #     prev_cell_value = self.state[row_idx - 1][len(row) - row_idx]
-        #     if cell_value != prev_cell_value:
-        #         break
-        #     equal_diags += 1
-
-        # if equal_diags == len(row):
-        #     return cell_value
-
         # Detect downward diagonal from the top left
         diag = True
         start_row = self.state[0]
