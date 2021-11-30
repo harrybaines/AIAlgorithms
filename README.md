@@ -16,5 +16,6 @@ pipenv install --dev
 To check everything is working, run the Tic-Tac-Toe MCTS AI from the root of the whole repo:
 
 ```bash
-python -m mcts.tictactoe
+cd mcts
+python tictactoe.py
 ```
