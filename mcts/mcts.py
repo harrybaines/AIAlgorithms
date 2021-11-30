@@ -9,28 +9,27 @@ class MonteCarloTreeSearch:
     """Monte Carlo Tree Search class"""
 
     def find_best_move(
-        self, board: "Board", iterations: int = 100
+        self, board: "Board", iterations: int = 1_000
     ) -> Tuple[int, int]:
         """Given a number of MCTS iterations to run, find the best possible
-        move from the tree's current root node and return as the action to
-        take.
+        move from the tree's current root node and return the action to take.
 
         A new root node is constructed and initialized with the board state
         provided. The board state can be initialized to any starting point, and
         is iteratively updated during the game so the MCTS algorithm can find
         the best action from the current board state.
 
-        The current player is initialized to -1 (AI) as it is assumed the
-        player (1) has already played, and it is now the AI's turn to play.
+        The current player is initialized to 1 (human player) as it is assumed
+        the AI (-1) has already played, but this can be configured.
 
         Args:
             board (Board): The board to provide to the root node of the search
                 tree.
             iterations (int, optional): The number of MCTS iterations. Defaults
-                to 100.
+                to 1_000.
 
         Returns:
-            Tuple[int, int]: The (row, column) action to.
+            Tuple[int, int]: The (row, column) action to take.
         """
         self.root_node = Node(board=board, player=1)
 
@@ -42,14 +41,11 @@ class MonteCarloTreeSearch:
             selected_node = self._select()
 
             # Expansion phase: expand the most promising node which has already
-            # been visited
+            # been visited and is not a terminal state
             if selected_node.visited and not selected_node.is_terminal:
-                # If the selected node has already been visited, expand the
-                # node with all possible actions from the current state, and
-                # perform a rollout from the first new child node
-                # If the selected node is a terminal state, we simply return
-                # the value of that state and backpropagate it up the tree
-                # NOTE: could be a random selection
+                # Expand the node with all possible actions from the current
+                # state, and perform a rollout from the first new child node
+                # (this could be changed to a random selection)
                 self._expand(selected_node)
                 selected_node = (
                     selected_node.children[0]
@@ -58,13 +54,13 @@ class MonteCarloTreeSearch:
                 )
 
             # Simulation phase: perform rollouts for leaf nodes which haven't
-            # been visited yet
+            # been visited yet or for terminal states
             # Backpropagation phase: backpropagate the results from the rollout
             # up the tree
             result = self._rollout(selected_node)
             self._backpropagate(selected_node, result)
 
-        # Get the best action
+        # Get the node with the largest number of visits and the action
         node_to_choose = self._get_child_node_with_max_visits()
         return node_to_choose.action
 
@@ -92,8 +88,8 @@ class MonteCarloTreeSearch:
         """Performs the expansion phase of the MCTS algorithm.
 
         This method creates new child nodes for all possible actions you can
-        take from given node, where each child node contains the new state of
-        the board after each action was taken.
+        take from the given node, where each child node contains the new state
+        of the board after each action was taken.
 
         Args:
             node (Node): The node to expand.
@@ -125,7 +121,8 @@ class MonteCarloTreeSearch:
         Args:
             node (Node): The node to perform a rollout for.
         """
-        # For terminal states, return the value of the terminal state
+        # If the node is a terminal state, we simply return the value of that
+        # state and backpropagate it up the tree
         game_state = node.board.game_state
         if node.is_terminal:
             if game_state == 0:
@@ -152,7 +149,8 @@ class MonteCarloTreeSearch:
             (row, col) = random.choice(available_actions)
             cur_board.play_move(row, col, cur_player)
 
-        # Check for player win where the most recent move was taken by the player
+        # Check for player win where the most recent move was taken by the
+        # player
         # Check for AI win where the most recent move was taken by the AI
         game_state = cur_board.game_state
         if game_state == 0:
@@ -161,9 +159,9 @@ class MonteCarloTreeSearch:
             game_state == -1 and node.player == -1
         ):
             return 1
-        # Game state is different to the current node player, therefore
-        # The player won where the most recent move was taken by the AI, or
-        # the won win where the most recent move was taken by the player
+        # Game state is different to the current node player, therefore the
+        # player won where the most recent move was taken by the AI, or the
+        # AI won where the most recent move was taken by the player
         return -1
 
     def _backpropagate(self, node: "Node", result: int) -> None:  # type: ignore[no-self-use]
@@ -175,6 +173,7 @@ class MonteCarloTreeSearch:
         Args:
             node (Node): The node containing the child nodes to backpropagate
                 their values up the tree.
+            result (int): The result of the game from the rollout phase.
         """
         # Update w_i and n_i for this node based on the result of the game
         node.n += 1
@@ -265,7 +264,7 @@ class Board:
         down the rows in a clockwise fashion.
 
         Returns:
-            List[Tuple[row, col]]: A list of tuples, where each tuple consists
+            List[Tuple[int, int]]: A list of tuples, where each tuple consists
                 of a row-column pair, representing a possible action to take.
         """
         return [
@@ -406,6 +405,9 @@ class Node:
 
         Args:
             board (Board): The board for this node.
+            player (int): The value of the player which will perform an action
+                on the board associated with this node (i.e. 1 if the human
+                performs the action, -1 if the AI performs the action).
             parent (Node, optional): The parent node of this new node. Defaults
                 to None.
         """
@@ -429,6 +431,11 @@ class Node:
 
     @property
     def is_terminal(self) -> bool:
+        """Returns True if this node represents a terminal state
+
+        Returns:
+            bool: True if this node is a terminal state, False otherwise.
+        """
         return self.board.is_complete
 
     def add_child(self, node: "Node") -> None:

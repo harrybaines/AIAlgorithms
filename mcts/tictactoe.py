@@ -37,17 +37,9 @@ class TicTacToe:
         be used to play the game from a non-starting position.
         """
         self.board = Board([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
-        # [[0, 0, 0], [0, 0, 0], [0, 0, 0]]: empty board state
-        # [[0, 0, 0], [0, -1, 0], [1, 0, -1]]: tutorial diagram example
-        # [[0, 0, 1], [1, 1, -1], [-1, -1, 0]]: h plays 2, machine should play 9
-        # [[0, 0, 0], [-1, 1, 1], [0, 0, -1]]: h plays 3, machine should play 7 (not working!)
-        # [[0, 0, 1], [1, 0, -1], [-1, 1, 0]]: h plays 2, machine should play 5 (not working!)
-        # [[-1, -1, 1], [1, 1, -1], [0, 1, 0]]: endgame example, h plays 3, machine should play 7
-        # [[-1, 1, -1], [1, 1, -1], [0, 0, 0]]: endgame example, h plays 9, machine should play 8
 
     def play(self) -> None:
-        """Begins the Tic-Tac-Toe game by alternating between human and AI
-        moves"""
+        """Begins Tic-Tac-Toe by alternating between human and AI moves"""
         # Initialize MCTS
         self.mcts = MonteCarloTreeSearch()
         if not self.board.is_empty:
@@ -76,6 +68,7 @@ class TicTacToe:
                 break
 
     def print_game_state(self) -> None:
+        """Prints the result of the game"""
         if self.board.game_state == 0:
             print("Tie!")
         elif self.board.game_state == -1:
