@@ -326,37 +326,61 @@ class Board:
 
         # NOTE: refactor
         # Check if there is a complete diagonal (return the player value)
-        equal_diags = 0
-        for row_idx, row in enumerate(self.state):
-            cell_value = row[row_idx]
-            if cell_value == 0:
-                break
-            if row_idx == 0:
-                equal_diags += 1
-                continue
-            prev_cell_value = self.state[row_idx - 1][row_idx - 1]
-            if cell_value != prev_cell_value:
-                break
-            equal_diags += 1
+        # equal_diags = 0
+        # for row_idx, row in enumerate(self.state):
+        #     cell_value = row[row_idx]
+        #     if cell_value == 0:
+        #         break
+        #     if row_idx == 0:
+        #         equal_diags += 1
+        #         continue
+        #     prev_cell_value = self.state[row_idx - 1][row_idx - 1]
+        #     if cell_value != prev_cell_value:
+        #         break
+        #     equal_diags += 1
 
-        if equal_diags == len(row):
-            return cell_value
+        # if equal_diags == len(row):
+        #     return cell_value
 
-        equal_diags = 0
-        for row_idx, row in enumerate(self.state):
-            cell_value = row[len(row) - 1 - row_idx]
-            if cell_value == 0:
-                break
-            if row_idx == 0:
-                equal_diags += 1
-                continue
-            prev_cell_value = self.state[row_idx - 1][len(row) - row_idx]
-            if cell_value != prev_cell_value:
-                break
-            equal_diags += 1
+        # equal_diags = 0
+        # for row_idx, row in enumerate(self.state):
+        #     cell_value = row[len(row) - 1 - row_idx]
+        #     if cell_value == 0:
+        #         break
+        #     if row_idx == 0:
+        #         equal_diags += 1
+        #         continue
+        #     prev_cell_value = self.state[row_idx - 1][len(row) - row_idx]
+        #     if cell_value != prev_cell_value:
+        #         break
+        #     equal_diags += 1
 
-        if equal_diags == len(row):
-            return cell_value
+        # if equal_diags == len(row):
+        #     return cell_value
+
+        # Detect downward diagonal from the top left
+        diag = True
+        start_row = self.state[0]
+        for row_idx in range(1, len(start_row)):
+            prev_cell = self.state[row_idx - 1][row_idx - 1]
+            cur_cell = self.state[row_idx][row_idx]
+            if cur_cell == 0 or prev_cell != cur_cell:
+                diag = False
+                break
+        if diag:
+            return start_row[0]
+
+        # Detect downward diagonal from the top right
+        diag = True
+        start_row = self.state[0]
+        for idx in range(len(start_row), 1, -1):
+            prev_cell = self.state[len(start_row) - idx][idx - 1]
+            cur_cell = self.state[(len(start_row) - idx) + 1][idx - 2]
+            if cur_cell == 0 or prev_cell != cur_cell:
+                diag = False
+                break
+        if diag:
+            return start_row[-1]
 
         # Check for a draw (i.e. all board spaces have been filled and we have
         # no winner)
