@@ -2,6 +2,8 @@ import copy
 import random
 from typing import List, Optional, Tuple
 
+from tqdm import tqdm
+
 import utils
 
 
@@ -36,7 +38,7 @@ class MonteCarloTreeSearch:
         # Start by expanding the root node
         self._expand(self.root_node)
 
-        for _ in range(iterations):
+        for _ in tqdm(range(iterations)):
             # Selection phase: select the most promising leaf node
             selected_node = self._select()
 
@@ -222,6 +224,8 @@ class MonteCarloTreeSearch:
 class Board:
     """Board class which represents a simple 3x3 Tic-Tac-Toe board"""
 
+    DEFAULT_BOARD_SIZE: int = 3
+
     def __init__(self, state: Optional[List[List[int]]] = None) -> None:
         """initialize a new Board object with empty state if no state is
         provided, otherwise initialize the Board with the provided state.
@@ -232,9 +236,10 @@ class Board:
                 [1, 0, 0],
                 [0,-1, 0]
             ]
+
         where:
             1: Player (naughts)
-            -1: AI (crosses)
+           -1: AI (crosses)
             0: Empty space
 
         Args:
@@ -242,7 +247,7 @@ class Board:
                 to use. Defaults to an empty board state.
         """
         self.state = (
-            state if state is not None else [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+            state if state is not None else self.get_empty_board_state()
         )
 
     def play_move(self, row: int, col: int, player: int) -> None:
@@ -339,28 +344,47 @@ class Board:
 
         # Check if there is a complete diagonal (return the player value)
         # Detect downward diagonal from the top left
-        diag = True
-        start_row = self.state[0]
-        for row_idx in range(1, len(start_row)):
-            prev_cell = self.state[row_idx - 1][row_idx - 1]
-            cur_cell = self.state[row_idx][row_idx]
-            if cur_cell == 0 or prev_cell != cur_cell:
-                diag = False
-                break
-        if diag:
-            return start_row[0]
+        # diag = True
+        # start_row = self.state[0]
+        # for row_idx in range(1, len(start_row)):
+        #     prev_cell = self.state[row_idx - 1][row_idx - 1]
+        #     cur_cell = self.state[row_idx][row_idx]
+        #     if cur_cell == 0 or prev_cell != cur_cell:
+        #         diag = False
+        #         break
+        # if diag:
+        #     return start_row[0]
 
-        # Detect downward diagonal from the top right
-        diag = True
-        start_row = self.state[0]
-        for idx in range(len(start_row), 1, -1):
-            prev_cell = self.state[len(start_row) - idx][idx - 1]
-            cur_cell = self.state[(len(start_row) - idx) + 1][idx - 2]
-            if cur_cell == 0 or prev_cell != cur_cell:
-                diag = False
-                break
-        if diag:
-            return start_row[-1]
+        # diag = True
+        # start_row = self.state[0]
+        # for idx in range(len(start_row), 1, -1):
+        #     prev_cell = self.state[len(start_row) - idx][idx - 1]
+        #     cur_cell = self.state[(len(start_row) - idx) + 1][idx - 2]
+        #     if cur_cell == 0 or prev_cell != cur_cell:
+        #         diag = False
+        #         break
+        # if diag:
+        #     return start_row[-1]
+
+        # Detect downward diagonal from the top left
+        first_row_len = len(self.state[0])
+        downward_diagonal = [
+            self.state[idx][idx] for idx in range(first_row_len)
+        ]
+        if 0 not in downward_diagonal and all(
+            x == downward_diagonal[0] for x in downward_diagonal
+        ):
+            return downward_diagonal[0]
+
+        # Detect upward diagonal from the bottom left
+        upward_diagonal = [
+            self.state[first_row_len - 1 - idx][idx]
+            for idx in range(first_row_len)
+        ]
+        if 0 not in upward_diagonal and all(
+            x == upward_diagonal[0] for x in upward_diagonal
+        ):
+            return upward_diagonal[0]
 
         # Check for a draw (i.e. all board spaces have been filled and we have
         # no winner)
@@ -395,8 +419,21 @@ class Board:
             row_str = f"\t  {' | '.join(col_values)} "
             print(row_str)
             if i != board_size - 1:
-                print("\t", "-" * 25)
+                print("\t", "-" * (board_size * 5 - 1))
         print("\n")
+
+    def get_empty_board_state(self) -> List[List[int]]:
+        """Returns an empty board state to use from the beginning of a tic tac
+        toe game
+
+        Returns:
+            List[List[int]]: A list of lists of 0's representing empty board
+                positions.
+        """
+        return [
+            [0 for _ in range(self.DEFAULT_BOARD_SIZE)]
+            for _ in range(self.DEFAULT_BOARD_SIZE)
+        ]
 
 
 class Node:

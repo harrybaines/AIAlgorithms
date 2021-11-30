@@ -24,40 +24,36 @@ from mcts import Board, MonteCarloTreeSearch, Node
 
 # Initialize a random seed for deterministic games
 SEED = 42
-random.seed(SEED)
+# random.seed(SEED)
 
 
 class TicTacToe:
     """TicTacToe class to initialize a new Tic-Tac-Toe game"""
 
-    def __init__(self) -> None:
+    def __init__(self, board: Board = None) -> None:
         """Initializes a new Tic-Tac-Toe game.
 
         By default, an empty board state is used, however a partial board can
-        be used to play the game from a non-starting position.
+        be used to play the game from a non-starting position by initializing
+        MonteCarloTreeSearch with a custom board state.
+
+        Args:
+            board (Board, optional): An optional Board object to use at the
+                start of the game.
         """
-        self.board = Board(
-            [
-                [0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0],
-            ]
-        )
+        self.board = Board() if board is None else board
 
     def play(self) -> None:
         """Begins Tic-Tac-Toe by alternating between human and AI moves"""
         # Initialize MCTS
         self.mcts = MonteCarloTreeSearch()
-        if not self.board.is_empty:
-            self.board.print_board()
+        self.board.print_board()
 
         # Game loop
         while True:
             # Player's turn
             (player_row, player_col) = self.get_user_position()
-            print("Players move:")
+            print("\nPlayers move:")
             self.board.play_move(player_row, player_col, 1)
             self.board.print_board()
             if self.board.is_complete:
@@ -66,9 +62,9 @@ class TicTacToe:
 
             # AI's turn
             (row, col) = self.mcts.find_best_move(
-                board=self.board, iterations=10_000
+                board=self.board, iterations=1_000
             )
-            print("TTTAI's move:")
+            print("\nTTTAI's move:")
             self.board.play_move(row, col, -1)
             self.board.print_board()
             if self.board.is_complete:
@@ -107,7 +103,7 @@ class TicTacToe:
         total_positions = board_size * board_size
         while True:
             player_position = int(
-                input(f"Enter a position (1-{total_positions}) to play: ")
+                input(f"Enter a position (1-{total_positions}): ")
             )
             row = (player_position - 1) // board_size
             col = (player_position - 1) % board_size

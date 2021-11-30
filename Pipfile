@@ -4,6 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+tqdm = "*"
 
 [dev-packages]
 black = "*"
@@ -19,3 +20,6 @@ imports = "isort . --check-only"
 formatting = "black --line-length 79 --check ."
 types = "mypy ."
 lint = "pylint . --fail-under=9"
+
+[pipenv]
+allow_prereleases = true
