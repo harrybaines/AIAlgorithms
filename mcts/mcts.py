@@ -183,16 +183,29 @@ class MonteCarloTreeSearch:
         sign = -1
         while parent_node is not None:
             parent_node.n += 1
-            # Each parent up the tree has an incremented/decremented value
-            # because this indicates whether the player at this current node
-            # won or lost as a result of their actions
-            # (i.e. if the result was a win for the current node, then the parent
-            # node records a loss, and vice versa)
+            # If the rollout result wasn't a tie
             if result != 0:
+                # If the node we rolled out from was a terminal state, or the
+                # node we rollout out from had a game result equal to the
+                # player that played the move in that node
                 if node.is_terminal or node.player == result:
+                    # Start by decreasing the parent's w_i by 1, because the
+                    # rolled out node will always have a +1 score if we reach
+                    # here (i.e. rolled out to an AI win from an AI move, or
+                    # rolled out to a player win from a player move, or the
+                    # game state of the terminal node is equal to the terminal
+                    # node player)
+                    # For each parent, we alternate the sign (-1 for first
+                    # parent, +1 for next parent, -1 for next parent etc.)
                     parent_node.w = parent_node.w + (1 * sign)
                     sign = -sign
                 else:
+                    # Start by increasing the parent's w_i by 1, because the
+                    # player in the rolled out node at this point will not be
+                    # equal to the result of the game, so start by decreasing
+                    # the parent by 1, then increase the next parent by 1,
+                    # then decrease the next parent by 1 (etc.)
+                    # Again we alternate the sign to update w_i correctly
                     sign = -sign
                     parent_node.w = parent_node.w + (1 * sign)
 
