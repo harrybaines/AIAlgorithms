@@ -151,20 +151,7 @@ class MonteCarloTreeSearch:
             (row, col) = random.choice(available_actions)
             cur_board.play_move(row, col, cur_player)
 
-        # Check for player win where the most recent move was taken by the
-        # player
-        # Check for AI win where the most recent move was taken by the AI
-        game_state = cur_board.game_state
-        if game_state == 0:
-            return 0
-        elif (game_state == 1 and node.player == 1) or (
-            game_state == -1 and node.player == -1
-        ):
-            return 1
-        # Game state is different to the current node player, therefore the
-        # player won where the most recent move was taken by the AI, or the
-        # AI won where the most recent move was taken by the player
-        return -1
+        return cur_board.game_state
 
     def _backpropagate(self, node: "Node", result: int) -> None:  # type: ignore[no-self-use]
         """Performs the backpropagation phase of the MCTS algorithm.
@@ -175,15 +162,25 @@ class MonteCarloTreeSearch:
         Args:
             node (Node): The node containing the child nodes to backpropagate
                 their values up the tree.
-            result (int): The result of the game from the rollout phase.
+            result (int): The result of the game from the rollout phase (i.e.
+                the game state).
         """
         # Update w_i and n_i for this node based on the result of the game
+        node_player = node.player
         node.n += 1
-        node.w += result
+
+        if node.is_terminal:
+            node.w += 1
+        else:
+            if node.player == result:
+                node.w += 1
+            elif result != 0:
+                node.w -= 1
 
         # For each parent node of this node, update the values of n_i and w_i
         # up to the root
         parent_node = node.parent
+        sign = -1
         while parent_node is not None:
             parent_node.n += 1
             # Each parent up the tree has an incremented/decremented value
@@ -191,11 +188,14 @@ class MonteCarloTreeSearch:
             # won or lost as a result of their actions
             # (i.e. if the result was a win for the current node, then the parent
             # node records a loss, and vice versa)
-            parent_node.w = (
-                parent_node.w + 1
-                if parent_node.player == node.player
-                else parent_node.w - 1
-            )
+            if result != 0:
+                if node.is_terminal or node.player == result:
+                    parent_node.w = parent_node.w + (1 * sign)
+                    sign = -sign
+                else:
+                    sign = -sign
+                    parent_node.w = parent_node.w + (1 * sign)
+
             parent_node = parent_node.parent
 
     def _get_child_node_with_max_visits(self) -> "Node":
