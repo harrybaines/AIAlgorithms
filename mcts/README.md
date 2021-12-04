@@ -2,7 +2,7 @@
 
 ## Get Started
 
-Follow the instructions from the [`README.md`](https://github.com/harrybaines/AIAlgorithms) in the root of this repository.
+Follow the instructions in the [`README.md`](https://github.com/harrybaines/AIAlgorithms) from the root of this repository.
 
 Then run:
 
