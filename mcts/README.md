@@ -1,5 +1,15 @@
 # Monte Carlo Tree Search
 
+## Get Started
+
+Follow the instructions from the [`README.md`](https://github.com/harrybaines/AIAlgorithms) in the root of this repository.
+
+Then run:
+
+```
+python tictactoe.py
+```
+
 ## Example Board States
 
 Some example starting states for the `mcts.Board` class, where the next player is the human (used in the `Board` constructor in `tictactoe.TicTacToe.__init__`):
