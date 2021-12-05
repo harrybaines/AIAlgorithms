@@ -20,7 +20,7 @@
 import random
 from typing import Tuple
 
-from mcts import Board, MonteCarloTreeSearch, Node
+from mcts import Board, MonteCarloTreeSearch
 
 # Initialize a random seed for deterministic games
 SEED = 42
@@ -117,4 +117,5 @@ class TicTacToe:
 
 # Entry point
 if __name__ == "__main__":
+    # TicTacToe(board=Board(state=[[1, -1, -1], [0, 1, 0], [0, 0, 0]])).play()
     TicTacToe().play()

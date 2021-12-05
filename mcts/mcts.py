@@ -166,7 +166,6 @@ class MonteCarloTreeSearch:
                 the game state).
         """
         # Update w_i and n_i for this node based on the result of the game
-        node_player = node.player
         node.n += 1
 
         if node.is_terminal:
@@ -220,17 +219,6 @@ class MonteCarloTreeSearch:
         """
         return max(
             self.root_node.children, key=lambda child_node: child_node.n
-        )
-
-    def _get_child_node_with_max_score(self) -> "Node":
-        """Returns the child node with the largest score (w_i) from the current
-        tree's root node
-
-        Returns:
-            Node: The child node with the largest score (w_i).
-        """
-        return max(
-            self.root_node.children, key=lambda child_node: child_node.w
         )
 
 
