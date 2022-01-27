@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div id="header">
+    Tic-Tac-Toe using Monte Carlo Tree Search
+</div>
+<form action="{{ url_for('home.play') }}" method="POST">
+    <div id="game-board">
+        {% set count = namespace(value=0) %}
+        {% for row in board_state %}
+            {% for col in row %}
+                {% set count.value = count.value + 1 %}
+                <button 
+                    id='{{ count.value }}' 
+                    value='{{ count.value }}' 
+                    class="box" 
+                    type='submit' 
+                    name='cell' 
+                >
+                    {% if col == 1 %}
+                        O
+                    {% elif col == -1 %}
+                        X
+                    {% endif %}
+                </button>
+            {% endfor %}
+        {% endfor %}
+    </div>
+    <button id='reset-btn' type='submit'>Reset</button>
+</form>
+<div id="footer">
+    &copy; 2021 Harry Baines
+</div>
+
+{% endblock content %}

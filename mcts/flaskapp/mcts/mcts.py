@@ -4,7 +4,7 @@ from typing import List, Optional, Tuple
 
 from tqdm import tqdm
 
-import utils
+import flaskapp.mcts.utils as utils
 
 
 class MonteCarloTreeSearch:

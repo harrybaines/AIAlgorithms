@@ -20,7 +20,7 @@
 import random
 from typing import Tuple
 
-from mcts import Board, MonteCarloTreeSearch
+from flaskapp.mcts.mcts import Board, MonteCarloTreeSearch
 
 # Initialize a random seed for deterministic games
 SEED = 42
@@ -43,33 +43,31 @@ class TicTacToe:
         """
         self.board = Board() if board is None else board
 
-    def play(self) -> None:
+    def play(self, player_position) -> None:
         """Begins Tic-Tac-Toe by alternating between human and AI moves"""
         # Initialize MCTS
         self.mcts = MonteCarloTreeSearch()
         self.board.print_board()
 
-        # Game loop
-        while True:
-            # Player's turn
-            (player_row, player_col) = self.get_user_position()
-            print("\nPlayers move:")
-            self.board.play_move(player_row, player_col, 1)
-            self.board.print_board()
-            if self.board.is_complete:
-                self.print_game_state()
-                break
+        # Player's turn
+        (player_row, player_col) = self.get_user_position(player_position)
+        print("\nPlayers move:")
+        self.board.play_move(player_row, player_col, 1)
+        self.board.print_board()
+        if self.board.is_complete:
+            # self.print_game_state()
+            return
 
-            # AI's turn
-            (row, col) = self.mcts.find_best_move(
-                board=self.board, iterations=1_000
-            )
-            print("\nTTTAI's move:")
-            self.board.play_move(row, col, -1)
-            self.board.print_board()
-            if self.board.is_complete:
-                self.print_game_state()
-                break
+        # AI's turn
+        (row, col) = self.mcts.find_best_move(
+            board=self.board, iterations=1_000
+        )
+        print("\nTTTAI's move:")
+        self.board.play_move(row, col, -1)
+        self.board.print_board()
+        if self.board.is_complete:
+            # self.print_game_state()
+            return
 
     def print_game_state(self) -> None:
         """Prints the result of the game"""
@@ -81,7 +79,7 @@ class TicTacToe:
             print("Yay, player has won!")
         return
 
-    def get_user_position(self) -> Tuple[int, int]:
+    def get_user_position(self, player_position) -> Tuple[int, int]:
         """Gets the user's input position from the command line.
 
         The input is a number from 1-9 representing the following positions:
@@ -101,18 +99,19 @@ class TicTacToe:
         """
         board_size = self.board.size
         total_positions = board_size * board_size
-        while True:
-            player_position = int(
-                input(f"Enter a position (1-{total_positions}): ")
-            )
-            row = (player_position - 1) // board_size
-            col = (player_position - 1) % board_size
-            if (
-                1 <= player_position <= total_positions
-                and self.board.state[row][col] == 0
-            ):
-                return (row, col)
-            print("Not a legal move. Please try again.")
+        # while True:
+        # player_position = int(
+        #     input(f"Enter a position (1-{total_positions}): ")
+        # )
+        row = (player_position - 1) // board_size
+        col = (player_position - 1) % board_size
+        print(player_position)
+        if (
+            1 <= player_position <= total_positions
+            and self.board.state[row][col] == 0
+        ):
+            return (row, col)
+        # print("Not a legal move. Please try again.")
 
 
 # Entry point

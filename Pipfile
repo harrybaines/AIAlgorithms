@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 tqdm = "*"
 flask = "*"
+flask-caching = "*"
 
 [dev-packages]
 black = "*"
