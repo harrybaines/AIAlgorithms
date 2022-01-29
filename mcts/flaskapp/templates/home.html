@@ -4,7 +4,8 @@
 <div id="header">
     Tic-Tac-Toe using Monte Carlo Tree Search
 </div>
-<form action="{{ url_for('home.play') }}" method="POST">
+
+<form id='game-board-form' method="POST">
     <div id="game-board">
         {% set count = namespace(value=0) %}
         {% for row in board_state %}
@@ -13,9 +14,9 @@
                 <button 
                     id='{{ count.value }}' 
                     value='{{ count.value }}' 
-                    class="box" 
+                    class="cell" 
                     type='submit' 
-                    name='cell' 
+                    name='cell'
                 >
                     {% if col == 1 %}
                         O
@@ -26,10 +27,11 @@
             {% endfor %}
         {% endfor %}
     </div>
-    <button id='reset-btn' type='submit'>Reset</button>
+    <button type='submit' name='reset'>Reset</button>
 </form>
+
 <div id="footer">
-    &copy; 2021 Harry Baines
+    &copy; 2022 Harry Baines
 </div>
 
 {% endblock content %}

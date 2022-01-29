@@ -10,17 +10,10 @@ h1{
 .wrapper{
     text-align: center;
 }
-
-button{
-    margin-top: 25px;
-    
-}
-
-p{
+p {
     margin-top: 10px;
     text-align: center !important;
 }
-
 #header {
     background-color: #3b0086;
     height: 200px;
@@ -30,7 +23,6 @@ p{
     font-weight: bold;
     font-size: 42px;
 }
-
 #footer {
     background-color: #3b0086;
     height: 100px;
@@ -39,29 +31,32 @@ p{
     color: white;
     font-size: 14px;
 }
-
 #game-board {
-    width: 600px;
-    height: 600px;
+    width: 200px;
+    height: 200px;
     margin: 0 auto;
     background-color: #34495e;
     color: #fff;
-    border: 6px solid #2c3e50;
-    border-radius: 10px;
 	display: grid;
 	grid-template: repeat(3, 1fr) / repeat(3, 1fr);
 }
-
-.box {
-    border: 6px solid #2c3e50;
-    border-radius: 2px;
-    font-family: Helvetica;
+.cell {
+    font-family: 'Courier New', Courier, monospace;
     font-weight: bold;
-    font-size: 4em;
+    font-size: 2em;
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: white;
+    border: 1px solid black;
+    filter: brightness(100%);
+    transition: .1s ease-in-out all;
 }
-.box:hover {
+.cell:hover {
     cursor: pointer;
+    filter: brightness(84%);
+    transition: .1s ease-in-out all;
+}
+#settings {
+    background-color: grey;
 }
