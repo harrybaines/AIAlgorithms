@@ -1,7 +1,8 @@
 <form id='game-board-form' method="POST">
     <div id='game-state-info'>
-        <p></p>
-        <button type='submit' name='reset'>Try Again</button>
+        <h4>Player's Turn</h4>
+    </div>
+    <div id="loading" class="loading">
     </div>
     <div id="game-board">
         {% set count = namespace(value=0) %}
@@ -14,9 +15,10 @@
                     class="cell" 
                     type='submit' 
                     name='cell'
-                >
+                    >
                 </button>
             {% endfor %}
         {% endfor %}
-    </div>
+    </div>    
+    <button class="btn btn-outline-primary" type='submit' name='reset'>Reset</button>
 </form>

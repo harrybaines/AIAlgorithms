@@ -1,4 +1,4 @@
-$(document).on('submit','#game-board-form', function(e) {
+$(document).on('submit', '#game-board-form', function(e) {
     e.preventDefault();
 
     // Play the move locally before the AI starts to think
@@ -7,17 +7,23 @@ $(document).on('submit','#game-board-form', function(e) {
     if (clickedCell.hasClass('playerCell') || clickedCell.hasClass('aiCell')) {
         return;
     }
-
+    
     // Get values of game settings set by the user
     const boardSize = $('input[name=board_size]:checked', '#game-controls-form').val()
     const mctsIterations = $('input[name=mcts_iterations]', '#game-controls-form').val()
-
+    
     if (mctsIterations > 100000 || mctsIterations < 1) {
         alert('MCTS iterations too high. Try a value between 1 and 100,000');
         return;
     }
-
+    
     // Let the AI think, then update the UI with the AI's move
+    if (clickedCell.attr('name') !== 'reset') {
+        clickedCell.addClass('playerCell');
+        clickedCell.text('O');
+        $("#game-state-info h4").text("AI is thinking...");
+    }
+
     $.ajax({
         type: 'POST',
         url: '/play',
@@ -29,7 +35,11 @@ $(document).on('submit','#game-board-form', function(e) {
         success: function(response) {
             const { board, game_state_message } = response;
             let cellPos = 1;
-            $("#game-state-info p").text(game_state_message);
+            if (game_state_message) {
+                $("#game-state-info h4").text(game_state_message);
+            } else {
+                $("#game-state-info h4").text("Player's Turn");
+            }
             for (let i = 0; i < board.length; i++) { 
                 for (let j = 0; j < board[0].length; j++) {
                     const player = board[i][j];

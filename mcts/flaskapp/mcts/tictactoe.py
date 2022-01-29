@@ -67,11 +67,11 @@ class TicTacToe:
         """Prints the result of the game"""
         game_state = self.board.game_state
         if game_state == 0:
-            return "Tie!"
+            return "It's a tie!"
         elif game_state == -1:
-            return "AI has won!"
+            return "The AI has won!"
         elif game_state == 1:
-            return "Player has won!"
+            return "The player has won!"
         return None
 
     def get_user_position(self, player_position) -> Tuple[int, int]:

@@ -67,11 +67,22 @@ p {
     background-color: white;
 }
 .playerCell {
-    background-color: green;
+    background-color: #54AB57;
 }
 .aiCell {
-    background-color: red;
+    background-color: #D7282F;
 }
 .playerCell:hover, .aiCell:hover {
     cursor: initial;
+}
+#game-container {
+    margin: 50px auto;
+}
+#game-board-form {
+    text-align: center;
+}
+#about-container {
+    background-color: rgb(246, 246, 246);
+    text-align: center;
+    padding: 75px 150px;
 }
