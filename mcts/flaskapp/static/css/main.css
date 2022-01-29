@@ -50,7 +50,7 @@ p {
 .cell {
     font-family: 'Courier New', Courier, monospace;
     font-weight: bold;
-    font-size: 1.75em;
+    font-size: 28px;
     color: rgb(240,240,240);
     display: flex;
     justify-content: center;
