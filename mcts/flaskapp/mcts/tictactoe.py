@@ -43,7 +43,7 @@ class TicTacToe:
         """
         self.board = Board() if board is None else board
 
-    def play(self, player_position) -> None:
+    def play(self, player_position: int, iterations: int) -> None:
         """Begins Tic-Tac-Toe by alternating between human and AI moves"""
         # Initialize MCTS
         self.mcts = MonteCarloTreeSearch()
@@ -56,7 +56,7 @@ class TicTacToe:
 
         # AI's turn
         (row, col) = self.mcts.find_best_move(
-            board=self.board, iterations=1_000
+            board=self.board, iterations=iterations
         )
         self.board.play_move(row, col, -1)
         if self.board.is_complete:
@@ -96,7 +96,6 @@ class TicTacToe:
         total_positions = board_size * board_size
         row = (player_position - 1) // board_size
         col = (player_position - 1) % board_size
-        print(player_position)
         if (
             1 <= player_position <= total_positions
             and self.board.state[row][col] == 0

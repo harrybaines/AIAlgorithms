@@ -32,8 +32,8 @@ p {
     font-size: 14px;
 }
 #game-board {
-    width: 150px;
-    height: 150px;
+    width: 250px;
+    height: 250px;
     margin: 25px auto;
     background-color: #34495e;
     color: #fff;
@@ -50,7 +50,7 @@ p {
 .cell {
     font-family: 'Courier New', Courier, monospace;
     font-weight: bold;
-    font-size: 1.5em;
+    font-size: 1.75em;
     color: rgb(240,240,240);
     display: flex;
     justify-content: center;

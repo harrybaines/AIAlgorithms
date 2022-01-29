@@ -227,8 +227,8 @@ class Board:
 
     DEFAULT_BOARD_SIZE: int = 3
 
-    def __init__(self, state: Optional[List[List[int]]] = None) -> None:
-        """initialize a new Board object with empty state if no state is
+    def __init__(self, state: Optional[List[List[int]]] = None, board_size: Optional[int]=None) -> None:
+        """Initialize a new Board object with empty state if no state is
         provided, otherwise initialize the Board with the provided state.
 
         The state is a list of lists of the following format (for a 3x3 board):
@@ -246,9 +246,13 @@ class Board:
         Args:
             state (Optional[List[List[int]]], optional): The state of the board
                 to use. Defaults to an empty board state.
+            board_size (int): The size of the board (e.g. 3 for a 3x3 board, 4 for a
+                4x4 board etc).
         """
+        if board_size is None:
+            board_size = self.DEFAULT_BOARD_SIZE
         self.state = (
-            state if state is not None else self.get_empty_board_state()
+            state if state is not None else self.get_empty_board_state(board_size)
         )
 
     def play_move(self, row: int, col: int, player: int) -> None:
@@ -400,17 +404,21 @@ class Board:
                 print("\t", "-" * (board_size * 5 - 1))
         print("\n")
 
-    def get_empty_board_state(self) -> List[List[int]]:
+    def get_empty_board_state(self, board_size: int) -> List[List[int]]:
         """Returns an empty board state to use from the beginning of a tic tac
         toe game
+
+        Args:
+            board_size (int): The size of the board (e.g. 3 for a 3x3 board, 4 for a
+                4x4 board etc).
 
         Returns:
             List[List[int]]: A list of lists of 0's representing empty board
                 positions.
         """
         return [
-            [0 for _ in range(self.DEFAULT_BOARD_SIZE)]
-            for _ in range(self.DEFAULT_BOARD_SIZE)
+            [0 for _ in range(board_size)]
+            for _ in range(board_size)
         ]
 
 

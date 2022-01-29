@@ -5,29 +5,27 @@
     Tic-Tac-Toe using Monte Carlo Tree Search
 </div>
 
+{% include 'board.html' %}
 
-<form id='game-board-form' method="POST">
-    <div id='game-state-info'>
-        <p></p>
-        <button type='submit' name='reset'>Try Again</button>
-    </div>
-    <div id="game-board">
-        {% set count = namespace(value=0) %}
-        {% for row in board_state %}
-            {% for col in row %}
-                {% set count.value = count.value + 1 %}
-                <button 
-                    id='{{ count.value }}' 
-                    value='{{ count.value }}' 
-                    class="cell" 
-                    type='submit' 
-                    name='cell'
-                >
-                </button>
-            {% endfor %}
-        {% endfor %}
-    </div>
-</form>
+<div>
+    <h5>Options</h5>
+    <form id='game-controls-form' method="POST">
+        <h6>Board Size</h6>
+        <input type="radio" id="board_size_3" name="board_size" value="3" checked>
+        <label for="html">3x3</label><br>
+        <input type="radio" id="board_size_4" name="board_size" value="4">
+        <label for="html">4x4</label><br>
+        <input type="radio" id="board_size_5" name="board_size" value="5">
+        <label for="html">5x5</label><br>
+        <input type="radio" id="board_size_6" name="board_size" value="6">
+        <label for="html">6x6</label><br>
+        <input type="radio" id="board_size_7" name="board_size" value="7">
+        <label for="html">7x7</label><br>
+
+        <h6>MCTS Iterations (per move)</h6>
+        <input type='number' name='mcts_iterations' value="1000">
+    </form>
+</div>
 
 <div id="footer">
     &copy; 2022 Harry Baines
