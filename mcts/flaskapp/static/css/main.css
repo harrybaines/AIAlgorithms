@@ -32,31 +32,46 @@ p {
     font-size: 14px;
 }
 #game-board {
-    width: 200px;
-    height: 200px;
-    margin: 0 auto;
+    width: 150px;
+    height: 150px;
+    margin: 25px auto;
     background-color: #34495e;
     color: #fff;
 	display: grid;
 	grid-template: repeat(3, 1fr) / repeat(3, 1fr);
 }
+#game-state-info {
+    text-align: center;
+    margin: 25px 0px;
+}
+#settings {
+    background-color: grey;
+}
 .cell {
     font-family: 'Courier New', Courier, monospace;
     font-weight: bold;
-    font-size: 2em;
+    font-size: 1.5em;
+    color: rgb(240,240,240);
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: white;
-    border: 1px solid black;
+    border: 1px solid grey;
     filter: brightness(100%);
-    transition: .1s ease-in-out all;
 }
-.cell:hover {
+.cell:hover:not(.playerCell):not(.aiCell):enabled {
     cursor: pointer;
     filter: brightness(84%);
-    transition: .1s ease-in-out all;
 }
-#settings {
-    background-color: grey;
+.blankCell {
+    background-color: white;
+}
+.playerCell {
+    background-color: green;
+}
+.aiCell {
+    background-color: red;
+}
+.playerCell:hover, .aiCell:hover {
+    cursor: initial;
 }

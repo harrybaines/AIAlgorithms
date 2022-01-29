@@ -47,37 +47,32 @@ class TicTacToe:
         """Begins Tic-Tac-Toe by alternating between human and AI moves"""
         # Initialize MCTS
         self.mcts = MonteCarloTreeSearch()
-        self.board.print_board()
 
         # Player's turn
         (player_row, player_col) = self.get_user_position(player_position)
-        print("\nPlayers move:")
         self.board.play_move(player_row, player_col, 1)
-        self.board.print_board()
         if self.board.is_complete:
-            # self.print_game_state()
             return
 
         # AI's turn
         (row, col) = self.mcts.find_best_move(
             board=self.board, iterations=1_000
         )
-        print("\nTTTAI's move:")
         self.board.play_move(row, col, -1)
-        self.board.print_board()
         if self.board.is_complete:
-            # self.print_game_state()
             return
 
-    def print_game_state(self) -> None:
+    @property
+    def game_state_msg(self) -> None:
         """Prints the result of the game"""
-        if self.board.game_state == 0:
-            print("Tie!")
-        elif self.board.game_state == -1:
-            print("Oh no, the AI has won!")
-        elif self.board.game_state == 1:
-            print("Yay, player has won!")
-        return
+        game_state = self.board.game_state
+        if game_state == 0:
+            return "Tie!"
+        elif game_state == -1:
+            return "AI has won!"
+        elif game_state == 1:
+            return "Player has won!"
+        return None
 
     def get_user_position(self, player_position) -> Tuple[int, int]:
         """Gets the user's input position from the command line.
@@ -99,10 +94,6 @@ class TicTacToe:
         """
         board_size = self.board.size
         total_positions = board_size * board_size
-        # while True:
-        # player_position = int(
-        #     input(f"Enter a position (1-{total_positions}): ")
-        # )
         row = (player_position - 1) // board_size
         col = (player_position - 1) % board_size
         print(player_position)
@@ -111,7 +102,6 @@ class TicTacToe:
             and self.board.state[row][col] == 0
         ):
             return (row, col)
-        # print("Not a legal move. Please try again.")
 
 
 # Entry point

@@ -5,7 +5,12 @@
     Tic-Tac-Toe using Monte Carlo Tree Search
 </div>
 
+
 <form id='game-board-form' method="POST">
+    <div id='game-state-info'>
+        <p></p>
+        <button type='submit' name='reset'>Try Again</button>
+    </div>
     <div id="game-board">
         {% set count = namespace(value=0) %}
         {% for row in board_state %}
@@ -18,16 +23,10 @@
                     type='submit' 
                     name='cell'
                 >
-                    {% if col == 1 %}
-                        O
-                    {% elif col == -1 %}
-                        X
-                    {% endif %}
                 </button>
             {% endfor %}
         {% endfor %}
     </div>
-    <button type='submit' name='reset'>Reset</button>
 </form>
 
 <div id="footer">
