@@ -6,33 +6,52 @@
 </div>
 
 <div id='game-container' class="container">
-    <div class="row">
-        <div class="col col-sm-6">
-            {% include 'board.html' %}
-        </div>
-        <div class="col col-sm-6">
-            <form id='game-controls-form' method="POST">
-                <div class='container'>
-                    <h3>Options</h3>
-                    <div class='row'>
-                        <div class='col'>
-                            <h5>Board Size</h5>
-                            <input type="radio" id="board_size_3" name="board_size" value="3" checked>
-                            <label for="html">3x3</label><br>
-                            <input type="radio" id="board_size_4" name="board_size" value="4">
-                            <label for="html">4x4</label><br>
-                            <input type="radio" id="board_size_5" name="board_size" value="5">
-                            <label for="html">5x5</label><br>
-                            <input type="radio" id="board_size_6" name="board_size" value="6">
-                            <label for="html">6x6</label><br>
-                        </div>
-                        <div class='col'>
-                            <h5>MCTS Iterations</h5>
-                            <input type='number' name='mcts_iterations' value="1000">
+    <div id='controls'>
+        <form class='row gx-3 gy-2 align-items-center' method="POST">
+            <div class='container'>
+                <div class='row'>
+                    <div class='col-2'>
+                        <label for="board_size" class="form-label">Board Size</label>
+                        <select class="form-select form-select-sm" aria-label="Board Size Select" id="board_size">
+                            <option selected id="board_size_3" value="3">3x3</option>
+                            <option id="board_size_4" value="4">4x4</option>
+                            <option id="board_size_5" value="5">5x5</option>
+                            <option id="board_size_6" value="6">6x6</option>
+                        </select>
+                    </div>
+                    <div class='col-2'>
+                        <label for="mcts_iterations" class="form-label">MCTS Iterations</label>
+                        <input id='mcts_iterations' class="form-control form-select-sm" type='number' value="1000">
+                    </div>
+                    <div class='col-2'>
+                        <label for="uct_c" class="form-label">Exploration Parameter</label>
+                        <select class="form-select form-select-sm" aria-label="UCT c" id="uct_c">
+                            <option selected id="uct_c_0.1" value="0.1">0.1</option>
+                            <option id="uct_c_1" value="1">1</option>
+                            <option id="uct_c_root_2" value="root_2">root(2)</option>
+                            <option id="uct_c_2" value="2">2</option>
+                        </select>
+                    </div>
+                    <div class='col-2'>
+                        <label for="starting_player" class="form-label">Starting Player</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input checked class="form-check-input" type="radio" id="player" name="starting_player" value="1">
+                                <label class="form-check-label" for="player">Player</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" id="ai" name="starting_player" value="-1">
+                                <label class="form-check-label" for="ai">AI</label>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </form>
+            </div>
+        </form>
+    </div>
+    <div class="row">
+        <div class="col col-sm-12">
+            {% include 'board.html' %}
         </div>
     </div>
 </div>

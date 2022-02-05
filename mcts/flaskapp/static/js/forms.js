@@ -9,9 +9,9 @@ $(document).on('submit', '#game-board-form', function(e) {
     }
     
     // Get values of game settings set by the user
-    const boardSize = $('input[name=board_size]:checked', '#game-controls-form').val()
-    const mctsIterations = $('input[name=mcts_iterations]', '#game-controls-form').val()
-    
+    const boardSize = $('#board_size').val()
+    const mctsIterations = $('#mcts_iterations').val()
+    console.log(mctsIterations)
     if (mctsIterations > 100000 || mctsIterations < 1) {
         alert('MCTS iterations too high. Try a value between 1 and 100,000');
         return;
@@ -77,7 +77,7 @@ $(document).on('submit', '#game-board-form', function(e) {
 });
 
 // Game controls radio button
-$('input[name=board_size]').click(function() {
+$("#board_size").on("change", function(e) {
     const boardSize = $(this).val();
     $.ajax({
         type: 'POST',
