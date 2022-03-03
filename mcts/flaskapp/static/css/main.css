@@ -15,7 +15,7 @@ p {
     text-align: center !important;
 }
 #header {
-    background-color: #39523A;
+    background-color: #154c79;
     height: 200px;
     line-height: 200px;
     text-align: center;
@@ -24,7 +24,7 @@ p {
     font-size: 36px;
 }
 #footer {
-    background-color: #39523A;
+    background-color: #154c79;
     height: 100px;
     line-height: 100px;
     text-align: center;
@@ -87,7 +87,7 @@ p {
 }
 #about-container {
     text-align: center;
-    padding: 75px 150px;
+    padding: 75px 100px;
 }
 #controls {
     background-color: white;
@@ -97,4 +97,15 @@ p {
 }
 .form-label {
     color: grey;
+}
+#mcts-algorithm-diagram {
+    width: 800px;
+}
+#selection-expansion-container {
+}
+#selection-expansion-diagram {
+    width: 600px;
+}
+#rollout-diagram {
+    width: 600px;
 }
