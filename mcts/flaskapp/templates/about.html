@@ -1,15 +1,58 @@
 <div id='about-container'>
     <h2>About</h2>
-    <p>
-        The classic game of Tic-Tac-Toe can be solved by applying the Monte Carlo Tree Search
-        algorithm (MCTS).
-    </p>
-    <img id='mcts-algorithm-diagram' src="static/images/mcts.png" />
+    <div id='about-inner'>
+        <p>
+            An exploratory project, with the aim of applying the Monte Carlo Tree Search
+            algorithm (MCTS) to the classic game of Tic-Tac-Toe for varying board sizes.
+            This solves the game making it impossible to beat!
 
-    <div id='selection-expansion-container'>
-        <img id='selection-expansion-diagram' src="static/images/selection-expansion.png" />
-    </div>
-    <div id='rollout-container'>
-        <img id='rollout-diagram' src="static/images/rollout.png" />
+            If you're interested, you can find the code for this project
+            <a href="https://github.com/harrybaines/AIAlgorithms/tree/main/mcts" target="_blank">here</a>.
+        </p>
+        <hr />
+        <h3>Overview</h3>
+        <p>
+            The classic game of Tic-Tac-Toe can be solved by applying a simple minimax algorithm,
+            however in this project we take a different approach by applying the Monte Carlo Tree
+            Search algorithm (MCTS). 
+        </p>
+
+        <figure>
+            <img id='mcts-algorithm-diagram' src="static/images/mcts.png" />
+            <figcaption>Fig 1. Monte Carlo Tree Search Algorithm</figcaption>
+        </figure>
+
+        <p>
+            Simpler approaches such as a classic minimax algorithm can also be used (i.e. one
+            player tries to maximise the outcome with the other player trying to minimize the outcome),
+            however MCTS removes the reliance on an evaluation function 
+            by continously simulating random actions from game states and backpropagating those
+            results up the search tree over a large number of iterations. Following this, we can then
+            select the most promising action to take from a given state.
+
+            however for games with larger branching factors, for example Chess or Go, 
+        </p>
+        <hr />
+        <h3>Implementation</h3>
+        <p>
+            John Levine provides a brilliant explanation of MCTS, which you can find
+            <a href="https://www.youtube.com/watch?v=UXW2yZndl7U&t=204s" target="_blank">here</a>,
+            and was the main source of inspiration for this project.
+        </p>
+
+        1. Selection:
+
+        2. Expansion:
+
+        3. Simulation:
+
+        4. Backpropagation:
+        
+        <div id='selection-expansion-container'>
+            <img id='selection-expansion-diagram' src="static/images/selection-expansion.png" />
+        </div>
+        <div id='rollout-container'>
+            <img id='rollout-diagram' src="static/images/rollout.png" />
+        </div>
     </div>
 </div>

@@ -89,7 +89,7 @@ $("#board_size").on("change", function(e) {
             $("#game-board-form").replaceWith(response);
             $("#game-board").css( "grid-template", `repeat(${boardSize}, 1fr) / repeat(${boardSize}, 1fr)`);
             // Adjust the font size of the cells
-            const newFontSize = 28 - ((boardSize - 3) * 3);
+            const newFontSize = 48 - ((boardSize - 3) * 10);
             $(".cell").css("font-size", newFontSize);
         },
         error: function() {

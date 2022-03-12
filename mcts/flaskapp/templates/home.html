@@ -9,14 +9,13 @@
     <div id='controls'>
         <form class='row gx-3 gy-2 align-items-center' method="POST">
             <div class='container'>
-                <div class='row'>
+                <div class='row justify-content-md-center'>
                     <div class='col-2'>
                         <label for="board_size" class="form-label">Board Size</label>
                         <select class="form-select form-select-sm" aria-label="Board Size Select" id="board_size">
                             <option selected id="board_size_3" value="3">3x3</option>
                             <option id="board_size_4" value="4">4x4</option>
                             <option id="board_size_5" value="5">5x5</option>
-                            <option id="board_size_6" value="6">6x6</option>
                         </select>
                     </div>
                     <div class='col-2'>
@@ -24,7 +23,7 @@
                         <input id='mcts_iterations' class="form-control form-select-sm" type='number' value="1000">
                     </div>
                     <div class='col-2'>
-                        <label for="uct_c" class="form-label">Exploration Parameter</label>
+                        <label for="uct_c" class="form-label">Exploration Param</label>
                         <select class="form-select form-select-sm" aria-label="UCT c" id="uct_c">
                             <option selected id="uct_c_0.1" value="0.1">0.1</option>
                             <option id="uct_c_1" value="1">1</option>
