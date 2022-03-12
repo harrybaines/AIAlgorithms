@@ -22,8 +22,8 @@ hr {
 }
 #header {
     background-color: #154c79;
-    height: 200px;
-    line-height: 200px;
+    height: 225px;
+    line-height: 225px;
     text-align: center;
     color: white;
     font-weight: bold;
@@ -35,7 +35,7 @@ hr {
     line-height: 100px;
     text-align: center;
     color: white;
-    font-size: 14px;
+    font-size: 16px;
 }
 #game-board {
     width: 250px;
@@ -110,11 +110,13 @@ hr {
 }
 #about-container figure {
     margin: 45px 0px;
+    text-align: center;
 }
 #about-container figcaption {
     margin-top: 20px;
 }
-#about-inner p {
+#about-inner p,
+#about-inner ol {
     text-align: left !important;
 }
 #controls {
@@ -133,11 +135,9 @@ hr {
 #mcts-algorithm-diagram {
     width: 100%;
 }
-/* #selection-expansion-container {
-} */
 #selection-expansion-diagram {
-    width: 100%;
+    width: 600px;
 }
 #rollout-diagram {
-    width: 100;
+    width: 450px;
 }

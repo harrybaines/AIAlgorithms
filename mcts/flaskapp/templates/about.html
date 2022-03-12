@@ -2,35 +2,30 @@
     <h2>About</h2>
     <div id='about-inner'>
         <p>
-            An exploratory project, with the aim of applying the Monte Carlo Tree Search
-            algorithm (MCTS) to the classic game of Tic-Tac-Toe for varying board sizes.
-            This solves the game making it impossible to beat!
+            An exploratory project, with the aim of applying a from-scratch implementation of the
+            Monte Carlo Tree Search (MCTS) algorithm to the classic game of Tic-Tac-Toe for varying board sizes.
+            This approach essentially solves the game making it impossible to beat!
 
-            If you're interested, you can find the code for this project
-            <a href="https://github.com/harrybaines/AIAlgorithms/tree/main/mcts" target="_blank">here</a>.
+            If you're interested in viewing the source code, you can find the GitHub page
+            for this project <a href="https://github.com/harrybaines/AIAlgorithms/tree/main/mcts" target="_blank">here</a>.
         </p>
         <hr />
         <h3>Overview</h3>
         <p>
-            The classic game of Tic-Tac-Toe can be solved by applying a simple minimax algorithm,
-            however in this project we take a different approach by applying the Monte Carlo Tree
-            Search algorithm (MCTS). 
-        </p>
-
-        <figure>
-            <img id='mcts-algorithm-diagram' src="static/images/mcts.png" />
-            <figcaption>Fig 1. Monte Carlo Tree Search Algorithm</figcaption>
-        </figure>
-
-        <p>
-            Simpler approaches such as a classic minimax algorithm can also be used (i.e. one
-            player tries to maximise the outcome with the other player trying to minimize the outcome),
-            however MCTS removes the reliance on an evaluation function 
-            by continously simulating random actions from game states and backpropagating those
-            results up the search tree over a large number of iterations. Following this, we can then
-            select the most promising action to take from a given state.
-
-            however for games with larger branching factors, for example Chess or Go, 
+            A variety of methods exist to solve the game of Tic-Tac-Toe such as the
+            <a href="https://en.wikipedia.org/wiki/Minimax" target="_blank">minimax algorithm</a>            
+            and its variants. With this approach, one player tries to maximise the outcome with the
+            other player trying to minimize the outcome. <br /><br />
+            
+            MCTS employs a different approach by constructing a search tree and continously simulating random actions from game states and backpropagating the results of the
+            simulations up the search tree over a large number of iterations. Over time, we end up with a search
+            tree in which the tree's nodes consist of those which were considered 'promising' as well as other
+            nodes which were explored but didn't lead anywhere. This approach is particularly suited to games with high branching factors (such as Chess or Go)
+            because the number of possible board configurations is so large, hence it is infeasible to use
+            algorithms like minimax in these situations. <br /><br />
+            
+            The result of MCTS allows us to identify the most promising action to take from a given board state
+            (i.e. nodes which have resulted, on average, in a high win rate for the player in this position).            
         </p>
         <hr />
         <h3>Implementation</h3>
@@ -39,20 +34,57 @@
             <a href="https://www.youtube.com/watch?v=UXW2yZndl7U&t=204s" target="_blank">here</a>,
             and was the main source of inspiration for this project.
         </p>
-
-        1. Selection:
-
-        2. Expansion:
-
-        3. Simulation:
-
-        4. Backpropagation:
-        
-        <div id='selection-expansion-container'>
+        <p>
+            The MCTS algorithm works in the following way:
+            <figure>
+                <img id='mcts-algorithm-diagram' src="static/images/mcts.png" />
+                <figcaption>Fig 1. Monte Carlo Tree Search Algorithm</figcaption>
+            </figure>
+        </p>
+        <ol>
+            <li>
+                <strong>Selection</strong>: if the current board state/node is not a leaf node, select the child of this
+                node which maximises the UCB1 value. Repeat this process for the newly selected node until
+                you reach a leaf node.
+            </li>
+            <li>
+                <strong>Expansion</strong>: if the selected leaf node has been visited before, we add child nodes to this leaf
+                node representing all possible next board states for each available action. The first of these
+                new child nodes is selected for use in the next step.
+            </li>
+            <li>
+                <strong>Simulation</strong>: if the node selected from the selection step has not been visited yet, we perform
+                a random simulation (rollout) of the game (i.e. alternating random actions between player 1 and
+                player 2) from this board state until we reach the end of the game. If the selected node from 
+                the selection step has been visited, we take the first child node from the new child nodes created
+                from the expansion step, and then perform a random simulation of the game from that child node.
+                <figure>
+                    <img id='rollout-diagram' src="static/images/rollout.png" />
+                    <figcaption>Fig 3. Simulation step of MCTS</figcaption>
+                </figure>
+            </li>
+            <li>
+                <strong>Backpropagation</strong>: the result of the game is then propagated back up the tree by incrementing the number
+                of visits by 1 for all nodes visited during this iteration, as well as the score of each node (i.e. 
+                if the result of the rollout resulted in a win for player 2 and it was player 1's turn in the leaf node,
+                all of player 1's nodes up the tree have their score decremented by 1 with player 2's nodes having
+                their score incremented by 1).
+            </li>
+        </ol>
+        <p>
+            An overview of the MCTS algorithm is given below:
+        </p>
+        <figure>
             <img id='selection-expansion-diagram' src="static/images/selection-expansion.png" />
-        </div>
-        <div id='rollout-container'>
-            <img id='rollout-diagram' src="static/images/rollout.png" />
-        </div>
+            <figcaption>Fig 2. General MCTS flow diagram</figcaption>
+        </figure>
+
+
+        <p>
+            After a large number of iterations we can then select the action from the root node of the search tree
+            which leads to the child node with the most visits (this will be the most promising move to take from
+            the root node's board state).
+        </p>
+        
     </div>
 </div>
