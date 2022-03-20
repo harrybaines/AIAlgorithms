@@ -1,11 +1,5 @@
 import numpy as np
-
-class Neuron:
-    def __init__(self, n_inputs, activation_fn) -> None:
-        self.n_inputs = n_inputs
-        self.activation_fn = activation_fn
-        self.w = 0
-        self.b = 0
+import activations
 
 class NeuralNetworkLayer:
     def __init__(self, n_neurons, n_neurons_prev, activation_fn):
@@ -15,10 +9,13 @@ class NeuralNetworkLayer:
         # If we are dealing with the input layer, we have no previous neurons
         n_neurons_prev = 1 if n_neurons_prev == -1 else n_neurons_prev
 
-        self.neurons = [
-            Neuron(n_inputs=n_neurons, activation_fn=activation_fn)
-            for _ in range(n_neurons)
-        ]
+        # Initialise parameters
+        self.W = np.random.rand(n_neurons, n_neurons_prev) * 0.01
+        self.b = np.random.rand(n_neurons, 1) * 0.01
+
+    def initialize_parameters(self):
+        # TODO: initialize to small random numbers
+        pass
 
     def __repr__(self):
         return f'Neural Network Layer (n_neurons={self.n_neurons}, activation_fn={self.activation_fn})'
@@ -34,8 +31,12 @@ class NeuralNetwork:
         if self.n_hidden_layers:
             _, activation_fn = hidden_layers[0]
             for i, (n_neurons, activation_fn) in enumerate(hidden_layers):
-                n_neurons_prev = self.layers[i]
-                hidden_layer = NeuralNetworkLayer(n_neurons=n_neurons, n_neurons_prev=n_neurons_prev, activation_fn=activation_fn)
+                n_neurons_prev = self.layers[i].n_neurons
+                hidden_layer = NeuralNetworkLayer(
+                    n_neurons=n_neurons, 
+                    n_neurons_prev=n_neurons_prev, 
+                    activation_fn=activation_fn
+                )
                 self.layers.append(hidden_layer)
         
         output_layer = NeuralNetworkLayer(
@@ -45,8 +46,27 @@ class NeuralNetwork:
         )
         self.layers += [output_layer]
 
-    def train(self, X):
-        # a_i = W_i.T.a_i-1 + b_i (in vector form)
+    def forward(self, X, y):
+        # Initialise activations of input layer to be equal to the input data (i.e. a[0])
+        self.layers[0].A = X.copy()
+
+        for i in range(1, len(self.layers)): 
+            cur_layer = self.layers[i]
+            prev_layer = self.layers[i-1]
+
+            # Compute activations
+            Z_i = cur_layer.W.dot(prev_layer.A) + cur_layer.b
+            cur_layer.A = activations.sigmoid(Z_i)
+
+    def backward(self):
+        pass
+
+    def loss(self):
+        pass
+
+    def train(self, X, y):
+        self.forward(X, y)
+        self.backward()
         return X
 
     def predict(self, y):
@@ -56,14 +76,18 @@ class NeuralNetwork:
         return '\n  |\n'.join([repr(layer) for layer in self.layers])
 
 if __name__ == "__main__":
-    X = np.array([0, 1, 2, 3, 4])
-    y = np.array([5, 7, 9, 11, 12])
+    X = np.array([
+        [10, 12, 20],
+        [11, 13, 22],
+        [9, 12, 19]
+    ])
+    y = np.array([1, 1, 0])
 
-    n_inputs = 1
+    n_inputs = X.shape[1]
     n_outputs = 1
     activation_fn = "sigmoid"
 
-    hidden_layers = [(4, "sigmoid")] # ordered list, where the i'th element represents the number of (input) neurons in the i'th hidden layer
+    hidden_layers = [(4, "relu")] # ordered list, where the i'th element represents the number of (input) neurons in the i'th hidden layer
 
     nn = NeuralNetwork(
         n_inputs=n_inputs, 
@@ -72,6 +96,6 @@ if __name__ == "__main__":
         hidden_layers=hidden_layers
     )
     print(nn)
-    nn.train(X=X)
+    nn.train(X=X, y=y)
     preds = nn.predict(y=[5, 6])
     print(preds)
