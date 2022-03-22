@@ -5,12 +5,14 @@ name = "pypi"
 
 [packages]
 tqdm = "*"
+numpy = "*"
 
 [dev-packages]
 black = "*"
 mypy = "*"
 isort = "*"
 pylint = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.9"
