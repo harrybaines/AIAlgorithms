@@ -33,8 +33,7 @@ python -m flask run
 2. Or run the Tic-Tac-Toe script and play in the shell:
 
 ```bash
-cd flaskapp/mcts
-python tictactoe.py
+python -m flaskapp.mcts.tictactoe
 ```
 
 ## Example Board States
