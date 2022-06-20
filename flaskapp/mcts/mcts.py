@@ -2,9 +2,8 @@ import copy
 import random
 from typing import List, Optional, Tuple
 
-from tqdm import tqdm
-
 import flaskapp.mcts.utils as utils
+from tqdm import tqdm
 
 
 class MonteCarloTreeSearch:
@@ -108,7 +107,7 @@ class MonteCarloTreeSearch:
             new_child_node.action = available_action
             node.add_child(new_child_node)
 
-    def _rollout(self, node: "Node") -> None:
+    def _rollout(self, node: "Node") -> int:
         """Performs the simulation phase of the MCTS algorithm.
 
         This method performs a simulation ('rollout') of the given node's board
@@ -122,6 +121,9 @@ class MonteCarloTreeSearch:
 
         Args:
             node (Node): The node to perform a rollout for.
+
+        Returns:
+            int: the state of the game board (see board.game_state).
         """
         # If the node is a terminal state, we simply return the value of that
         # state and backpropagate it up the tree
@@ -153,7 +155,7 @@ class MonteCarloTreeSearch:
 
         return cur_board.game_state
 
-    def _backpropagate(self, node: "Node", result: int) -> None:  # type: ignore[no-self-use]
+    def _backpropagate(self, node: "Node", result: int) -> None:
         """Performs the backpropagation phase of the MCTS algorithm.
 
         This method iteratively updates the values of n_i and w_i up the tree
@@ -227,7 +229,11 @@ class Board:
 
     DEFAULT_BOARD_SIZE: int = 3
 
-    def __init__(self, state: Optional[List[List[int]]] = None, board_size: Optional[int]=None) -> None:
+    def __init__(
+        self,
+        state: Optional[List[List[int]]] = None,
+        board_size: Optional[int] = None,
+    ) -> None:
         """Initialize a new Board object with empty state if no state is
         provided, otherwise initialize the Board with the provided state.
 
@@ -252,7 +258,9 @@ class Board:
         if board_size is None:
             board_size = self.DEFAULT_BOARD_SIZE
         self.state = (
-            state if state is not None else self.get_empty_board_state(board_size)
+            state
+            if state is not None
+            else self.get_empty_board_state(board_size)
         )
 
     def play_move(self, row: int, col: int, player: int) -> None:
@@ -416,10 +424,7 @@ class Board:
             List[List[int]]: A list of lists of 0's representing empty board
                 positions.
         """
-        return [
-            [0 for _ in range(board_size)]
-            for _ in range(board_size)
-        ]
+        return [[0 for _ in range(board_size)] for _ in range(board_size)]
 
 
 class Node:

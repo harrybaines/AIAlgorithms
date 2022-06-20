@@ -1,5 +1,7 @@
 import math
 
+from flaskapp.mcts.mcts import Node
+
 
 def calculate_uct(
     child_node: "Node", parent_node: "Node", c: int = 2

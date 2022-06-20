@@ -19,7 +19,7 @@
 
 import random
 from multiprocessing.sharedctypes import Value
-from typing import Tuple
+from typing import Optional, Tuple
 
 from flaskapp.mcts.mcts import Board, MonteCarloTreeSearch
 
@@ -63,7 +63,7 @@ class TicTacToe:
         if self.board.is_complete:
             return
 
-    def play_shell(self):
+    def play_shell(self) -> None:
         """Begins Tic-Tac-Toe by alternating between human and AI moves (in the shell)"""
         # Initialize MCTS
         self.mcts = MonteCarloTreeSearch()
@@ -72,7 +72,7 @@ class TicTacToe:
         # Game loop
         while True:
             # Player's turn
-            (player_row, player_col) = self.get_user_position(using_shell=True)
+            (player_row, player_col) = self.get_user_position()
             print("\nPlayers move:")
             self.board.play_move(player_row, player_col, 1)
             self.board.print_board()
@@ -92,7 +92,7 @@ class TicTacToe:
                 break
 
     @property
-    def game_state_msg(self) -> None:
+    def game_state_msg(self) -> Optional[str]:
         """Prints the result of the game"""
         game_state = self.board.game_state
         if game_state == 0:
@@ -104,8 +104,8 @@ class TicTacToe:
         return None
 
     def get_user_position(
-        self, player_position=None, using_shell=False
-    ) -> Tuple[int, int]:
+        self, player_position: Optional[int] = None
+    ) -> Tuple[Optional[int], Optional[int]]:
         """Gets the user's input position from the command line.
 
         The input is a number from 1-9 representing the following positions:
@@ -120,13 +120,20 @@ class TicTacToe:
         This value is transformed to a row, column pair to index the board
         state.
 
+        Args:
+            player_position (Optional[int]): A value from 1-9 representing the
+                player's chosen board position (defaults to None for playing in
+                the shell)
+
         Returns:
-            Tuple[int, int]: The row, column pair to play on the board state.
+            Tuple[Optional[int], Optional[int]]]: The row, column pair to play
+                on the board state (both are None for an incorrect user
+                position).
         """
         board_size = self.board.size
         total_positions = board_size * board_size
 
-        if using_shell:
+        if player_position is None:
             while True:
                 try:
                     player_position = int(
@@ -143,6 +150,7 @@ class TicTacToe:
             and self.board.state[row][col] == 0
         ):
             return (row, col)
+        return (None, None)
 
 
 # Entry point
