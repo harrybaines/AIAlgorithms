@@ -1,6 +1,7 @@
 # Tic-Tac-Toe AI using Monte Carlo Tree Search
 
-Play against the AI in the browser at this link: https://ttt-ai-mcts.herokuapp.com/.
+Play against the AI and see an overview of the algorithm details at this link: https://ttt-ai-mcts.herokuapp.com/.
+
 ## Quickstart
 
 Create a new virtual environment:
