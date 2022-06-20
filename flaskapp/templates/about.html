@@ -2,14 +2,13 @@
     <h2>About</h2>
     <div id='about-inner'>
         <p>
-            An exploratory project, with the aim of applying a from-scratch implementation of the
+            This project is a demonstration of applying a from-scratch implementation of the
             Monte Carlo Tree Search (MCTS) algorithm to the classic game of Tic-Tac-Toe for varying board sizes.
-            This approach essentially solves the game making it impossible to beat!
+            This approach essentially solves the game making it impossible to beat the AI!
 
             If you're interested in viewing the source code, you can find the GitHub page
-            for this project <a href="https://github.com/harrybaines/AIAlgorithms/tree/main/mcts" target="_blank">here</a>.
+            for this project <a href="https://github.com/harrybaines/MCTS-TTTAI/tree/main/flaskapp/mcts" target="_blank">here</a>.
         </p>
-        <hr />
         <h3>Overview</h3>
         <p>
             A variety of methods exist to solve the game of Tic-Tac-Toe such as the
@@ -22,12 +21,11 @@
             tree in which the tree's nodes consist of those which were considered 'promising' as well as other
             nodes which were explored but didn't lead anywhere. This approach is particularly suited to games with high branching factors (such as Chess or Go)
             because the number of possible board configurations is so large, hence it is infeasible to use
-            algorithms like minimax in these situations. <br /><br />
+            algorithms like minimax. <br /><br />
             
             The result of MCTS allows us to identify the most promising action to take from a given board state
-            (i.e. nodes which have resulted, on average, in a high win rate for the player in this position).            
+            (i.e. nodes which have resulted in, on average, a high win rate for the player in this position).            
         </p>
-        <hr />
         <h3>Implementation</h3>
         <p>
             John Levine provides a brilliant explanation of MCTS, which you can find
@@ -35,16 +33,16 @@
             and was the main source of inspiration for this project.
         </p>
         <p>
-            The MCTS algorithm works in the following way:
+            The MCTS algorithm is a tree-based method and works in the following way:
             <figure>
                 <img id='mcts-algorithm-diagram' src="static/images/mcts.png" />
-                <figcaption>Fig 1. Monte Carlo Tree Search Algorithm</figcaption>
+                <figcaption>Figure 1: Monte Carlo Tree Search Algorithm</figcaption>
             </figure>
         </p>
         <ol>
             <li>
                 <strong>Selection</strong>: if the current board state/node is not a leaf node, select the child of this
-                node which maximises the UCB1 value. Repeat this process for the newly selected node until
+                node which maximises the <a href="https://en.wikipedia.org/wiki/Monte_Carlo_tree_search#:~:text=Exploration%20and%20exploitation%5Bedit%5D" target="_blank">UCB1</a> value. Repeat this process for the newly selected node until
                 you reach a leaf node.
             </li>
             <li>
@@ -60,7 +58,7 @@
                 from the expansion step, and then perform a random simulation of the game from that child node.
                 <figure>
                     <img id='rollout-diagram' src="static/images/rollout.png" />
-                    <figcaption>Fig 3. Simulation step of MCTS</figcaption>
+                    <figcaption>Figure 2: Simulation step of MCTS</figcaption>
                 </figure>
             </li>
             <li>
@@ -72,11 +70,11 @@
             </li>
         </ol>
         <p>
-            An overview of the MCTS algorithm is given below:
+            An overview of the full MCTS algorithm is given below:
         </p>
         <figure>
             <img id='selection-expansion-diagram' src="static/images/selection-expansion.png" />
-            <figcaption>Fig 2. General MCTS flow diagram</figcaption>
+            <figcaption>Figure 3: General MCTS flow diagram</figcaption>
         </figure>
 
 

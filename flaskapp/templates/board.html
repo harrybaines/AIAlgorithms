@@ -2,8 +2,7 @@
     <div id='game-state-info'>
         <h4>Player's Turn</h4>
     </div>
-    <div id="loading" class="loading">
-    </div>
+    {{ game_state_message }}
     <div id="game-board">
         {% set count = namespace(value=0) %}
         {% for row in board_state %}

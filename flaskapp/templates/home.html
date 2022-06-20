@@ -2,15 +2,18 @@
 {% block content %}
 
 <div id="header">
-    Monte Carlo Tree Search for Tic-Tac-Toe
+    <p>
+        Monte Carlo Tree Search for Tic-Tac-Toe
+
+    </p>
 </div>
 
 <div id='game-container' class="container">
     <div id='controls'>
         <form class='row gx-3 gy-2 align-items-center' method="POST">
             <div class='container'>
-                <div class='row justify-content-md-center'>
-                    <div class='col-2'>
+                <div class='row justify-content-sm-center'>
+                    <div class='col-12 col-sm-4 col-md-3'>
                         <label for="board_size" class="form-label">Board Size</label>
                         <select class="form-select form-select-sm" aria-label="Board Size Select" id="board_size">
                             <option selected id="board_size_3" value="3">3x3</option>
@@ -18,11 +21,11 @@
                             <option id="board_size_5" value="5">5x5</option>
                         </select>
                     </div>
-                    <div class='col-2'>
+                    <div class='col-12 col-sm-4 col-md-3'>
                         <label for="mcts_iterations" class="form-label">MCTS Iterations</label>
                         <input id='mcts_iterations' class="form-control form-select-sm" type='number' value="1000">
                     </div>
-                    <div class='col-2'>
+                    <div class='col-12 col-sm-4 col-md-3'>
                         <label for="uct_c" class="form-label">Exploration Param</label>
                         <select class="form-select form-select-sm" aria-label="UCT c" id="uct_c">
                             <option selected id="uct_c_0.1" value="0.1">0.1</option>
@@ -30,19 +33,6 @@
                             <option id="uct_c_root_2" value="root_2">root(2)</option>
                             <option id="uct_c_2" value="2">2</option>
                         </select>
-                    </div>
-                    <div class='col-2'>
-                        <label for="starting_player" class="form-label">Starting Player</label>
-                        <div>
-                            <div class="form-check form-check-inline">
-                                <input checked class="form-check-input" type="radio" id="player" name="starting_player" value="1">
-                                <label class="form-check-label" for="player">Player</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" id="ai" name="starting_player" value="-1">
-                                <label class="form-check-label" for="ai">AI</label>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

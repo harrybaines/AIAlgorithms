@@ -11,7 +11,6 @@ $(document).on('submit', '#game-board-form', function(e) {
     // Get values of game settings set by the user
     const boardSize = $('#board_size').val()
     const mctsIterations = $('#mcts_iterations').val()
-    console.log(mctsIterations)
     if (mctsIterations > 100000 || mctsIterations < 1) {
         alert('MCTS iterations too high. Try a value between 1 and 100,000');
         return;
@@ -22,6 +21,7 @@ $(document).on('submit', '#game-board-form', function(e) {
         clickedCell.addClass('playerCell');
         clickedCell.text('O');
         $("#game-state-info h4").text("AI is thinking...");
+        $('.cell').attr("disabled", true);
     }
 
     $.ajax({
@@ -34,6 +34,7 @@ $(document).on('submit', '#game-board-form', function(e) {
         },
         success: function(response) {
             const { board, game_state_message } = response;
+            $('.cell').attr("disabled", false);
             let cellPos = 1;
             if (game_state_message) {
                 $("#game-state-info h4").text(game_state_message);

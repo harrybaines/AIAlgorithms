@@ -1,33 +1,61 @@
 body {
-    font-family: 'Lato', sans-serif;
+    font-family: 'Open Sans', sans-serif;
 }
 
 h1 {
     text-align: center !important;
     padding-top: 25px !important;
 }
-
-.wrapper{
-    text-align: center;
+h3 {
+    margin-top: 50px;
 }
+
 p {
     margin-top: 10px;
     text-align: center !important;
 }
 hr {
     margin: 50px auto;
-    width: 250px;
+    max-width: 250px;
     padding: 1px;
     color: 	#808080;
 }
+figure img {
+    max-width: 100% !important;
+}
 #header {
     background-color: #154c79;
-    height: 225px;
-    line-height: 225px;
+    height: 250px;
+    display: flex;
+    align-items: center;
     text-align: center;
     color: white;
     font-weight: bold;
-    font-size: 36px;
+    font-size: 22px;
+    padding: 0px 25px;
+}
+#header p {
+    margin: 0px auto;
+}
+#about-container {
+    text-align: center;
+    padding: 25px;
+}
+@media only screen and (min-width: 768px) {
+    #about-container {
+        padding: 75px 100px;
+    }
+    #header {
+        font-size: 28px;
+    }
+}
+@media only screen and (min-width: 992px) {
+    #header {
+        font-size: 36px;
+    }
+}
+.wrapper{
+    text-align: center;
 }
 #footer {
     background-color: #154c79;
@@ -35,8 +63,14 @@ hr {
     line-height: 100px;
     text-align: center;
     color: white;
-    font-size: 16px;
+    font-size: 14px;
 }
+@media only screen and (min-width: 768px) {
+    #footer {
+        font-size: 16px;
+    }
+}
+
 #game-board {
     width: 250px;
     height: 250px;
@@ -94,19 +128,20 @@ hr {
     text-align: center;
     margin: 70px;
 }
-#about-container {
-    text-align: center;
-    padding: 75px 100px;
-}
 #about-container h2, 
 #about-container h3 {
     margin-bottom: 25px;
 }
 #about-inner {
-    width: 700px;
+    max-width: 700px;
     margin: 0 auto;
     line-height: 32px;
-    font-size: 18px;
+    font-size: 14px;
+}
+@media only screen and (min-width: 768px) {
+    #about-inner {
+        font-size: 18px;
+    }
 }
 #about-container figure {
     margin: 45px 0px;
@@ -124,6 +159,12 @@ hr {
     padding: 18px 75px 22px 75px;
     margin: 0 auto;
     box-shadow: 0 1px 6px rgb(0 0 0 / 8%);
+    font-size: 14px;
+}
+@media only screen and (min-width: 768px) {
+    #controls {
+        font-size: 16px;
+    }
 }
 #controls div.row {
     max-width: 1200px;
@@ -133,11 +174,11 @@ hr {
     color: grey;
 }
 #mcts-algorithm-diagram {
-    width: 100%;
+    width: 650px;
 }
 #selection-expansion-diagram {
     width: 600px;
 }
 #rollout-diagram {
-    width: 450px;
+    width: 425px;
 }
