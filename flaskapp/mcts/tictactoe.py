@@ -50,8 +50,6 @@ class TicTacToe:
         self.mcts = MonteCarloTreeSearch()
 
         # Player's turn
-        (player_row, player_col) = self.get_user_position(player_position)
-        self.board.play_move(player_row, player_col, 1)
         if self.board.is_complete:
             return
 

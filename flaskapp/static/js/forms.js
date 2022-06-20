@@ -23,12 +23,33 @@ $(document).on('submit', '#game-board-form', function(e) {
         $("#game-state-info h4").text("AI is thinking...");
         $('.cell').attr("disabled", true);
     }
+    
+    // Get current state of the board
+    let boardState = []
+    let cellCounter = 1;
+    for (let i = 0; i < boardSize; i++) { 
+        let rowCells = [];
+        for (let j = 0; j < boardSize; j++) {
+            let cellOnBoard = $(`#game-board-form button[id='${cellCounter}']`);
+            if (cellOnBoard.hasClass("playerCell")) {
+                rowCells.push(1);
+            } else if (cellOnBoard.hasClass("aiCell")) {
+                rowCells.push(-1);
+            } else {
+                rowCells.push(0);
+            }
+            cellCounter += 1;
+        }
+        boardState.push(rowCells);
+      
+    }
 
     $.ajax({
         type: 'POST',
         url: '/play',
         data: {
             cell: cellId,
+            board_state: JSON.stringify(boardState),
             board_size: boardSize,
             mcts_iterations: mctsIterations
         },
